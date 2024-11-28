@@ -1,44 +1,27 @@
 import { MText } from "@/components/customText";
-import { SearchBar } from "@/components/SearchBar";
 import { SongListItem } from "@/components/SongListItem";
 import { hp, wp } from "@/utils/responsiveness";
-import { Image, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function HomeScreen() {
+export default function Downloads() {
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.avatarText}>
-          <Image
-            style={styles.userIcon}
-            source={require("@/assets/images/user-icon.png")}
-          />
-          <View>
-            <MText style={styles.helloText}>Hello</MText>
-            <MText style={styles.name}>John Doe</MText>
-          </View>
-        </View>
-        <View style={styles.iconWrapper}>
-          <Image source={require("@/assets/images/notification-icon.png")} />
-        </View>
-      </View>
-
       <View style={styles.bottomContainer}>
-        <MText style={styles.title}>Explore New Podcasts</MText>
-        <SearchBar />
-        <MText style={styles.subtitle}>Podcasts</MText>
+        <MText style={styles.title}>Downloads</MText>
 
         <View style={styles.songList}>
           <SongListItem
             songTitle="Enjoy The Nature"
             songSubtitle="Webby • Episode 01"
             listImageSource={require("@/assets/images/icon.png")}
+            actionButtonImageSource={require("@/assets/images/download-icon.png")}
           />
           <SongListItem
             songTitle="Tech Talk"
             songSubtitle="Dev World • Episode 10"
             listImageSource={require("@/assets/images/icon.png")}
+            actionButtonImageSource={require("@/assets/images/download-icon.png")}
           />
         </View>
       </View>
@@ -58,7 +41,7 @@ const styles = StyleSheet.create({
   },
   songList: {
     gap: hp(20),
-    marginTop: hp(12),
+    marginTop: hp(43),
   },
   bottomContainer: {
     paddingHorizontal: wp(20),
@@ -67,6 +50,7 @@ const styles = StyleSheet.create({
     fontSize: hp(20),
     fontWeight: "bold",
     color: "#fff",
+    textAlign: "center",
   },
   iconWrapper: {
     width: wp(40),

@@ -7,13 +7,15 @@ interface SongListItemProps {
   songTitle: string;
   songSubtitle: string;
   listImageSource: ImageSourcePropType;
+  actionButtonImageSource?: ImageSourcePropType;
 }
 
-export function SongListItem({
+export const SongListItem = ({
   songTitle,
   songSubtitle,
   listImageSource,
-}: SongListItemProps) {
+  actionButtonImageSource = require("@/assets/images/favorite.png"),
+}: SongListItemProps) => {
   return (
     <View style={styles.songList}>
       <View style={styles.imageText}>
@@ -24,10 +26,7 @@ export function SongListItem({
         </View>
       </View>
       <View style={styles.flex}>
-        <Image
-          style={styles.favorite}
-          source={require("@/assets/images/favorite.png")}
-        />
+        <Image style={styles.favorite} source={actionButtonImageSource} />
         <Image
           style={styles.favorite}
           source={require("@/assets/images/playcircle.png")}
@@ -35,7 +34,7 @@ export function SongListItem({
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   flex: {
