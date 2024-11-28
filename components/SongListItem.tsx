@@ -1,20 +1,27 @@
 import React from "react";
-import { Image, ImageSourcePropType, StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import { MText } from "@/components/customText";
 import { hp, wp } from "@/utils/responsiveness";
+
+type ActionButtonType = "favorite" | "download";
+
+const actionButtonImages: Record<ActionButtonType, any> = {
+  favorite: require("@/assets/images/favorite.png"),
+  download: require("@/assets/images/download-icon.png"),
+};
 
 interface SongListItemProps {
   songTitle: string;
   songSubtitle: string;
-  listImageSource: ImageSourcePropType;
-  actionButtonImageSource?: ImageSourcePropType;
+  listImageSource: any;
+  actionButtonType?: ActionButtonType;
 }
 
 export const SongListItem = ({
   songTitle,
   songSubtitle,
   listImageSource,
-  actionButtonImageSource = require("@/assets/images/favorite.png"),
+  actionButtonType = "favorite",
 }: SongListItemProps) => {
   return (
     <View style={styles.songList}>
@@ -26,9 +33,12 @@ export const SongListItem = ({
         </View>
       </View>
       <View style={styles.flex}>
-        <Image style={styles.favorite} source={actionButtonImageSource} />
         <Image
-          style={styles.favorite}
+          style={styles.icon}
+          source={actionButtonImages[actionButtonType]}
+        />
+        <Image
+          style={styles.icon}
           source={require("@/assets/images/playcircle.png")}
         />
       </View>
@@ -41,7 +51,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: wp(9),
   },
-  favorite: {
+  icon: {
     width: wp(26),
     height: wp(24),
   },
@@ -66,7 +76,6 @@ const styles = StyleSheet.create({
   songList: {
     flexDirection: "row",
     alignItems: "center",
-    color: "#fff",
     justifyContent: "space-between",
   },
   listImage: {

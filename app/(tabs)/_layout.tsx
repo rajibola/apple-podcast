@@ -26,15 +26,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="download"
+        name="favourites"
         options={{
-          title: "Download",
+          title: "Favourites",
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="downloads"
         options={{
-          title: "Explore",
+          title: "Downloads",
         }}
       />
     </Tabs>
