@@ -1,16 +1,49 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React from 'react';
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {RootStackParamList} from '../../../App';
 import BackIcon from '../../assets/svgs/BackIcon';
 import {MText} from '../../components/customText';
 import {hp, wp} from '../../utils/responsiveness';
+import {Feed} from 'react-native-rss-parser';
+import {getFeedUrlServices} from '../../api/applePodcast';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Podcast'>;
 
 export default function PodcastScreen({route, navigation}: Props) {
   const {podcast} = route.params;
+  const [feed, setFeed] = useState<Feed | null>(null);
+
+  const loadAllFeeds = useCallback(async () => {
+    const result = await getFeedUrlServices(podcast.feedUrl);
+    setFeed(result);
+  }, [podcast.feedUrl]);
+
+  useEffect(() => {
+    loadAllFeeds();
+  }, [loadAllFeeds]);
+
+  if (!feed) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#000',
+        }}>
+        <ActivityIndicator color="#f2f2f2" size="large" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -43,11 +76,31 @@ export default function PodcastScreen({route, navigation}: Props) {
           <MText style={styles.songSubtitle}>{podcast.artistName}</MText>
         </View>
       </View>
+
+      <FlatList
+        contentContainerStyle={styles.songList}
+        data={feed.items}
+        keyExtractor={item => item.id.toString()}
+        renderItem={({item}) => (
+          <TouchableOpacity style={styles.feedList}>
+            <MText style={styles.feedTitle}>{item.title}</MText>
+          </TouchableOpacity>
+        )}
+      />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  feedTitle: {color: '#fff'},
+  feedList: {
+    padding: hp(5),
+  },
+  songList: {
+    gap: hp(10),
+    paddingHorizontal: wp(20),
+    paddingTop: hp(20),
+  },
   playButton: {
     width: wp(60),
     height: wp(60),

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import RSSParser from 'react-native-rss-parser';
 
 const BASE_URL = 'https://itunes.apple.com/search';
 
@@ -49,4 +50,9 @@ export const getPodcastDetails = async (podcastId: string) => {
     `${BASE_URL}?id=${podcastId}&entity=podcast`,
   );
   return response.data.results[0];
+};
+
+export const getFeedUrlServices = async (feedUrl: string) => {
+  const response = await axios.get(feedUrl);
+  return await RSSParser.parse(response.data);
 };

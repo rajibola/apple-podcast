@@ -17,6 +17,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Player'>;
 
 export default function PlayerScreen({route, navigation}: Props) {
   const {item} = route.params;
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
