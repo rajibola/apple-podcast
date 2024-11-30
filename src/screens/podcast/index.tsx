@@ -84,6 +84,7 @@ export default function PodcastScreen({route, navigation}: Props) {
         renderItem={({item}) => (
           <TouchableOpacity style={styles.feedList}>
             <MText style={styles.feedTitle}>{item.title}</MText>
+            <MText style={styles.feedDuration}>{item.itunes.duration}</MText>
           </TouchableOpacity>
         )}
       />
@@ -92,9 +93,22 @@ export default function PodcastScreen({route, navigation}: Props) {
 }
 
 const styles = StyleSheet.create({
-  feedTitle: {color: '#fff'},
+  feedDuration: {
+    color: '#fff',
+    opacity: 0.7,
+    fontSize: hp(12),
+  },
+  feedTitle: {
+    color: '#fff',
+    fontWeight: '500',
+    marginBottom: hp(4),
+    fontSize: hp(13),
+  },
   feedList: {
     padding: hp(5),
+    paddingVertical: hp(8),
+    borderBottomWidth: hp(0.5),
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   songList: {
     gap: hp(10),

@@ -68,6 +68,7 @@ export default function HomeScreen() {
       ) : (
         <FlatList
           contentContainerStyle={styles.songList}
+          showsVerticalScrollIndicator={false}
           data={podcasts}
           keyExtractor={item => item.collectionId.toString()}
           renderItem={({item}) => <SongListItem item={item} />}

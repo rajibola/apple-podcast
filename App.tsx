@@ -5,6 +5,7 @@ import {Podcast} from './src/api/applePodcast';
 import BottomTabNavigator from './src/navigations/BottomTabNavigator'; // Import the extracted component
 import PlayerScreen from './src/screens/player';
 import PodcastScreen from './src/screens/podcast';
+import {StatusBar} from 'react-native';
 
 export type RootStackParamList = {
   Tabs: undefined;
@@ -21,6 +22,7 @@ const RootStack = createNativeStackNavigator<RootStackParamList>();
 function App(): React.JSX.Element {
   return (
     <NavigationContainer>
+      <StatusBar animated barStyle="light-content" />
       <RootStack.Navigator
         initialRouteName="Tabs"
         screenOptions={{headerShown: false}}>
