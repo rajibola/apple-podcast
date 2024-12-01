@@ -1,43 +1,8 @@
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
-import {Podcast} from './src/api/applePodcast';
-import BottomTabNavigator from './src/navigations/BottomTabNavigator'; // Import the extracted component
-import PlayerScreen from './src/screens/player';
-import PodcastScreen from './src/screens/podcast';
-import {StatusBar} from 'react-native';
-
-export type RootStackParamList = {
-  Tabs: undefined;
-  Podcast: {
-    podcast: Podcast;
-  };
-  Player: {
-    item: Podcast;
-  };
-};
-
-const RootStack = createNativeStackNavigator<RootStackParamList>();
+import RootStackNavigator from './src/navigations/RootStackNavigator';
 
 function App(): React.JSX.Element {
-  return (
-    <NavigationContainer>
-      <StatusBar animated barStyle="light-content" />
-      <RootStack.Navigator
-        initialRouteName="Tabs"
-        screenOptions={{headerShown: false}}>
-        <RootStack.Screen name="Tabs" component={BottomTabNavigator} />
-        <RootStack.Screen name="Podcast" component={PodcastScreen} />
-        <RootStack.Screen
-          name="Player"
-          component={PlayerScreen}
-          options={{
-            presentation: 'containedModal',
-          }}
-        />
-      </RootStack.Navigator>
-    </NavigationContainer>
-  );
+  return <RootStackNavigator />;
 }
 
 export default App;
