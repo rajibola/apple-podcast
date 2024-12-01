@@ -10,5 +10,5 @@ export const MText = (props: TextProps) => {
 };
 
 const styles = StyleSheet.create({
-  text: {fontFamily: 'Manrope'},
+  text: {fontFamily: 'Manrope', color: '#fff'},
 });
