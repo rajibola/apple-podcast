@@ -14,17 +14,11 @@ export const PlaybackService = async function () {
     Event.PlaybackState,
     ({state}: {state: State}) => {
       const updateState = usePlayerStore.getState();
-
-      console.log('Playback state changed:', state); // Debug log
-
       if (state === State.Playing) {
-        console.log('State is Playing');
         updateState.playPodcast(updateState.currentPodcast || '');
       } else if (state === State.Paused) {
-        console.log('State is Paused');
         updateState.pausePodcast();
       } else {
-        console.log('State is neither Playing nor Paused:', state);
         updateState.pausePodcast();
       }
     },
