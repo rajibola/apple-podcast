@@ -8,19 +8,20 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {Feed} from 'react-native-rss-parser';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {RootStackParamList} from '../../../App';
+import {getFeedUrlServices} from '../../api/applePodcast';
 import BackIcon from '../../assets/svgs/BackIcon';
 import {MText} from '../../components/customText';
+import {RootStackParamList} from '../../navigations/BottomTabNavigator';
+import {usePlayerStore} from '../../store/playerStore';
 import {hp, wp} from '../../utils/responsiveness';
-import {Feed} from 'react-native-rss-parser';
-import {getFeedUrlServices} from '../../api/applePodcast';
-import TrackPlayer from 'react-native-track-player';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Podcast'>;
 
 export default function PodcastScreen({route, navigation}: Props) {
   const {podcast} = route.params;
+  const playstore = usePlayerStore();
   const [feed, setFeed] = useState<Feed | null>(null);
 
   const loadAllFeeds = useCallback(async () => {
@@ -85,14 +86,14 @@ export default function PodcastScreen({route, navigation}: Props) {
         renderItem={({item}) => (
           <TouchableOpacity
             onPress={async () => {
-              await TrackPlayer.reset();
-              await TrackPlayer.add({
-                id: 'trackId',
+              playstore.start({
+                id: item.id,
                 url: item.enclosures[0].url,
-                title: 'Track Title',
-                artist: 'Track Artist',
+                title: item.title,
+                artist: podcast.artistName,
+                artwork: item.itunes.image,
+                duration: item.itunes.duration,
               });
-              TrackPlayer.play();
             }}
             style={styles.feedList}>
             <MText style={styles.feedTitle}>{item.title}</MText>
