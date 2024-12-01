@@ -1,11 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {FlatList, Image, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import TrackPlayer from 'react-native-track-player';
 import {Podcast, searchPodcasts} from '../../api/applePodcast';
 import {MText} from '../../components/customText';
 import {SearchBar} from '../../components/SearchBar';
 import {SongListItem} from '../../components/SongListItem';
 import {hp, wp} from '../../utils/responsiveness';
+// import TrackPlayer from 'react-native-track-player';
 
 // type IHomeScreenProp = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 
@@ -31,6 +33,19 @@ export default function HomeScreen() {
       setPodcasts(results);
     };
     prefetch();
+
+    TrackPlayer.setupPlayer().then(async () => {
+      // console.log('Player is setup');
+      // await TrackPlayer.add({
+      //   id: 'trackId',
+      //   url: 'https://traffic.libsyn.com/secure/syntax/Syntax222.mp3',
+      //   title: 'Track Title',
+      //   artist: 'Track Artist',
+      //   // artwork: require('track.png'),
+      // });
+    });
+
+    // TrackPlayer.play();
   }, []);
 
   return (

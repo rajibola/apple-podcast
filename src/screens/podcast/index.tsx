@@ -15,6 +15,7 @@ import {MText} from '../../components/customText';
 import {hp, wp} from '../../utils/responsiveness';
 import {Feed} from 'react-native-rss-parser';
 import {getFeedUrlServices} from '../../api/applePodcast';
+import TrackPlayer from 'react-native-track-player';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Podcast'>;
 
@@ -82,7 +83,18 @@ export default function PodcastScreen({route, navigation}: Props) {
         data={feed.items}
         keyExtractor={item => item.id.toString()}
         renderItem={({item}) => (
-          <TouchableOpacity style={styles.feedList}>
+          <TouchableOpacity
+            onPress={async () => {
+              await TrackPlayer.reset();
+              await TrackPlayer.add({
+                id: 'trackId',
+                url: item.enclosures[0].url,
+                title: 'Track Title',
+                artist: 'Track Artist',
+              });
+              TrackPlayer.play();
+            }}
+            style={styles.feedList}>
             <MText style={styles.feedTitle}>{item.title}</MText>
             <MText style={styles.feedDuration}>{item.itunes.duration}</MText>
           </TouchableOpacity>
