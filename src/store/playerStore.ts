@@ -2,10 +2,10 @@ import TrackPlayer from 'react-native-track-player';
 import {create} from 'zustand';
 
 interface ITrack {
-  id: string;
-  title: string;
-  artist: string;
-  duration: string;
+  id?: string;
+  title?: string;
+  artist?: string;
+  duration?: string;
   url: string;
   artwork?: string;
 }
