@@ -1,11 +1,13 @@
+import {CompositeNavigationProp, useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import Animated from 'react-native-reanimated';
+import {Podcast} from '../api/applePodcast';
+import {RootStackParamList} from '../navigations/BottomTabNavigator';
+import {MainStackParamList} from '../navigations/RootStackNavigator';
 import {hp, wp} from '../utils/responsiveness';
 import {MText} from './customText';
-import {Podcast} from '../api/applePodcast';
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../../App';
 
 type ActionButtonType = 'favorite' | 'download';
 
@@ -19,20 +21,27 @@ interface SongListItemProps {
   item: Podcast;
 }
 
-type IHomeScreenProp = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
+type SongListItemNavigationProp = CompositeNavigationProp<
+  NativeStackNavigationProp<RootStackParamList, 'HomeScreen'>,
+  NativeStackNavigationProp<MainStackParamList, 'Player'>
+>;
 
 export const SongListItem = ({
   actionButtonType = 'favorite',
   item,
 }: SongListItemProps) => {
-  const {navigate} = useNavigation<IHomeScreenProp>();
+  const {navigate} = useNavigation<SongListItemNavigationProp>();
 
   return (
     <TouchableOpacity
       onPress={() => navigate('Podcast', {podcast: item})}
       style={styles.songList}>
       <View style={styles.imageText}>
-        <Image style={styles.listImage} source={{uri: item.artworkUrl600}} />
+        <Animated.Image
+          style={styles.listImage}
+          source={{uri: item.artworkUrl600}}
+          sharedTransitionTag={`podcast-${item.trackId}`}
+        />
         <View style={styles.songText}>
           <MText numberOfLines={1} style={styles.title}>
             {item.trackName}

@@ -1,5 +1,5 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -8,27 +8,29 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Feed, FeedItem} from 'react-native-rss-parser';
+import Animated from 'react-native-reanimated';
+import {FeedItem} from 'react-native-rss-parser';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {getFeedUrlServices} from '../../api/applePodcast';
 import BackIcon from '../../assets/svgs/BackIcon';
 import {MText} from '../../components/customText';
 import {FeedListItem} from '../../components/FeedListItem';
 import {RootStackParamList} from '../../navigations/BottomTabNavigator';
-import {hp, wp} from '../../utils/responsiveness';
 import {useDownloadManagerStore} from '../../store/downloadStore';
+import usePodcastsStore from '../../store/podcastsStore';
+import {hp, wp} from '../../utils/responsiveness';
+
+export const AnimatedImage = Animated.createAnimatedComponent(Image);
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Podcast'>;
 
 export default function PodcastScreen({route, navigation}: Props) {
   const {podcast} = route.params;
-  const [feed, setFeed] = useState<Feed | null>(null);
+  const {feed, loadFeed, setFeed} = usePodcastsStore();
   const {addToQueue, getDownloadElementById} = useDownloadManagerStore();
 
   const loadAllFeeds = useCallback(async () => {
-    const result = await getFeedUrlServices(podcast.feedUrl);
-    setFeed(result);
-  }, [podcast.feedUrl]);
+    await loadFeed(podcast.feedUrl);
+  }, [podcast.feedUrl, loadFeed]);
 
   const onDownloadPress = (feedItem: FeedItem) => {
     addToQueue(feedItem.id, feedItem.enclosures[0].url);
@@ -36,21 +38,9 @@ export default function PodcastScreen({route, navigation}: Props) {
 
   useEffect(() => {
     loadAllFeeds();
-  }, [loadAllFeeds]);
 
-  if (!feed) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: '#000',
-        }}>
-        <ActivityIndicator color="#f2f2f2" size="large" />
-      </View>
-    );
-  }
+    return () => setFeed(null);
+  }, [loadAllFeeds, setFeed]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -74,34 +64,50 @@ export default function PodcastScreen({route, navigation}: Props) {
       </View>
 
       <View style={styles.wrapper}>
-        <Image
+        <Animated.Image
           style={styles.podcastCover}
           source={{uri: podcast.artworkUrl600}}
+          sharedTransitionTag={`podcast-${podcast.trackId}`}
         />
-        <View style={{flex: 1, alignSelf: 'flex-end', paddingVertical: hp(10)}}>
+        <View style={styles.collection}>
           <MText style={styles.songTitle}>{podcast.collectionName}</MText>
           <MText style={styles.songSubtitle}>{podcast.artistName}</MText>
         </View>
       </View>
-
-      <FlatList
-        contentContainerStyle={styles.songList}
-        data={feed.items}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({item}) => (
-          <FeedListItem
-            downloadElement={getDownloadElementById(item.id)}
-            onClickDownload={onDownloadPress}
-            item={item}
-            artistName={podcast.artistName}
-          />
-        )}
-      />
+      {!feed ? (
+        <View style={styles.loading}>
+          <ActivityIndicator color="#f2f2f2" size="large" />
+        </View>
+      ) : (
+        <FlatList
+          contentContainerStyle={styles.songList}
+          data={feed.items}
+          keyExtractor={item => item.id.toString()}
+          renderItem={({item}) => (
+            <FeedListItem
+              downloadElement={getDownloadElementById(item.id)}
+              onClickDownload={onDownloadPress}
+              item={item}
+              artistName={podcast.artistName}
+            />
+          )}
+        />
+      )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  collection: {
+    flex: 1,
+    alignSelf: 'flex-end',
+    paddingVertical: hp(10),
+  },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   songList: {
     gap: hp(10),
     paddingHorizontal: wp(20),

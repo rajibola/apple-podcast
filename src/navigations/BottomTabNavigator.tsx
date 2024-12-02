@@ -8,7 +8,6 @@ import {FavouriteScreen} from '../screens/favourite';
 import HomeScreen from '../screens/home';
 import PodcastScreen from '../screens/podcast';
 
-// Navigation Types
 export type RootStackParamList = {
   HomeScreen: undefined;
   Podcast: {podcast: Podcast};
@@ -20,10 +19,9 @@ export type BottomTabParamList = {
   Downloads: undefined;
 };
 
-// Home Stack Navigator
 const HomeStack = createNativeStackNavigator<RootStackParamList>();
 
-const HomeStackNavigator = () => (
+const HomeStackNavigator: React.FC = () => (
   <HomeStack.Navigator screenOptions={{headerShown: false}}>
     <HomeStack.Screen name="HomeScreen" component={HomeScreen} />
     <HomeStack.Screen name="Podcast" component={PodcastScreen} />
@@ -33,7 +31,7 @@ const HomeStackNavigator = () => (
 // Bottom Tab Navigator
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
-const BottomTabNavigator = () => (
+const BottomTabNavigator: React.FC = () => (
   <Tab.Navigator
     tabBar={props => <TabBar {...props} />}
     screenOptions={{headerShown: false}}>

@@ -2,22 +2,21 @@ import React, {useEffect, useState} from 'react';
 import {FlatList, Image, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import TrackPlayer from 'react-native-track-player';
-import {Podcast, searchPodcasts} from '../../api/applePodcast';
 import {MText} from '../../components/customText';
 import {SearchBar} from '../../components/SearchBar';
 import {SongListItem} from '../../components/SongListItem';
+import usePodcastsStore from '../../store/podcastsStore';
 import {hp, wp} from '../../utils/responsiveness';
 
 export default function HomeScreen() {
   const [query, setQuery] = useState<string>('');
-  const [podcasts, setPodcasts] = useState<Podcast[]>([]);
+  const {podcasts, searchPodcast} = usePodcastsStore();
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const results = await searchPodcasts(query);
-      setPodcasts(results);
+      await searchPodcast(query); // Use Zustand's searchPodcast method
     } catch (error) {
       console.error('Error searching podcasts:', error);
     }
@@ -26,13 +25,16 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const prefetch = async () => {
-      const results = await searchPodcasts('react native');
-      setPodcasts(results);
+      try {
+        await searchPodcast('react native'); // Prefetch some podcasts on initial load
+      } catch (error) {
+        console.error('Error prefetching podcasts:', error);
+      }
     };
     prefetch();
 
     TrackPlayer.setupPlayer();
-  }, []);
+  }, [searchPodcast]);
 
   return (
     <SafeAreaView style={styles.container}>
