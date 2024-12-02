@@ -8,26 +8,31 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Feed} from 'react-native-rss-parser';
+import {Feed, FeedItem} from 'react-native-rss-parser';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {getFeedUrlServices} from '../../api/applePodcast';
 import BackIcon from '../../assets/svgs/BackIcon';
 import {MText} from '../../components/customText';
+import {FeedListItem} from '../../components/FeedListItem';
 import {RootStackParamList} from '../../navigations/BottomTabNavigator';
-import {usePlayerStore} from '../../store/playerStore';
 import {hp, wp} from '../../utils/responsiveness';
+import {useDownloadManagerStore} from '../../store/downloadStore';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Podcast'>;
 
 export default function PodcastScreen({route, navigation}: Props) {
   const {podcast} = route.params;
-  const playstore = usePlayerStore();
   const [feed, setFeed] = useState<Feed | null>(null);
+  const {addToQueue, getDownloadElementById} = useDownloadManagerStore();
 
   const loadAllFeeds = useCallback(async () => {
     const result = await getFeedUrlServices(podcast.feedUrl);
     setFeed(result);
   }, [podcast.feedUrl]);
+
+  const onDownloadPress = (feedItem: FeedItem) => {
+    addToQueue(feedItem.id, feedItem.enclosures[0].url);
+  };
 
   useEffect(() => {
     loadAllFeeds();
@@ -84,21 +89,12 @@ export default function PodcastScreen({route, navigation}: Props) {
         data={feed.items}
         keyExtractor={item => item.id.toString()}
         renderItem={({item}) => (
-          <TouchableOpacity
-            onPress={async () => {
-              playstore.start({
-                id: item.id,
-                url: item.enclosures[0].url,
-                title: item.title,
-                artist: podcast.artistName,
-                artwork: item.itunes.image,
-                duration: item.itunes.duration,
-              });
-            }}
-            style={styles.feedList}>
-            <MText style={styles.feedTitle}>{item.title}</MText>
-            <MText style={styles.feedDuration}>{item.itunes.duration}</MText>
-          </TouchableOpacity>
+          <FeedListItem
+            downloadElement={getDownloadElementById(item.id)}
+            onClickDownload={onDownloadPress}
+            item={item}
+            artistName={podcast.artistName}
+          />
         )}
       />
     </SafeAreaView>
@@ -106,23 +102,6 @@ export default function PodcastScreen({route, navigation}: Props) {
 }
 
 const styles = StyleSheet.create({
-  feedDuration: {
-    color: '#fff',
-    opacity: 0.7,
-    fontSize: hp(12),
-  },
-  feedTitle: {
-    color: '#fff',
-    fontWeight: '500',
-    marginBottom: hp(4),
-    fontSize: hp(13),
-  },
-  feedList: {
-    padding: hp(5),
-    paddingVertical: hp(8),
-    borderBottomWidth: hp(0.5),
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-  },
   songList: {
     gap: hp(10),
     paddingHorizontal: wp(20),

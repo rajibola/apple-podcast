@@ -1,7 +1,7 @@
 import axios from 'axios';
 import RSSParser from 'react-native-rss-parser';
 
-const BASE_URL = 'https://itunes.apple.com/search';
+export const BASE_URL = 'https://itunes.apple.com/search';
 
 export interface Podcast {
   wrapperType: string;

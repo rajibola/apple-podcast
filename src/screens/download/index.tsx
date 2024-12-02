@@ -1,16 +1,48 @@
-import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, {useEffect} from 'react';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MText} from '../../components/customText';
+import {useDownloadManagerStore} from '../../store/downloadStore';
+import {usePlayerStore} from '../../store/playerStore';
 import {hp, wp} from '../../utils/responsiveness';
 
 export default function DownloadScreen() {
+  const {downloadedFiles, fetchDownloadedFiles} = useDownloadManagerStore();
+  const {start} = usePlayerStore();
+
+  // Initialize the player and fetch files
+  useEffect(() => {
+    const init = async () => {
+      fetchDownloadedFiles();
+    };
+    init();
+  }, [fetchDownloadedFiles]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.bottomContainer}>
         <MText style={styles.title}>Downloads</MText>
 
-        <View style={styles.songList}></View>
+        <View style={styles.songList}>
+          {downloadedFiles.map(item => (
+            <TouchableOpacity
+              key={item.id}
+              onPress={() =>
+                start({
+                  artist: item.artist,
+                  id: item.id,
+                  title: item.title,
+                  url: `file://${item.path}`,
+                  artwork: item.artwork,
+                })
+              }>
+              <View>
+                <MText>{item.title || item.id}</MText>
+                <MText>{item.artist}</MText>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
     </SafeAreaView>
   );
