@@ -13,3 +13,4 @@ export {Previous10seconds} from './Previous10seconds';
 export {SearchIcon} from './SearchIcon';
 export {ShareIcon} from './ShareIcon';
 export {SolidPause} from './SolidPause';
+export {DeleteIcon} from './DeleteIcon';

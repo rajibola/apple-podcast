@@ -77,14 +77,7 @@ export function PodcastScreen({route, navigation}: Props) {
           </TouchableOpacity>
         </View>
         <MText style={styles.pageTitle}>Podcast</MText>
-        <View style={styles.headerButtonWrapper}>
-          <TouchableOpacity style={styles.backButton}>
-            <Image
-              style={styles.icon}
-              source={require('../../assets/images/favorite.png')}
-            />
-          </TouchableOpacity>
-        </View>
+        <View style={styles.headerButtonWrapper} />
       </View>
 
       <View style={styles.wrapper}>
@@ -204,6 +197,7 @@ const styles = StyleSheet.create({
   headerButtonWrapper: {
     flexDirection: 'row',
     gap: wp(8),
+    minWidth: wp(40),
   },
   pageTitle: {
     color: '#fff',

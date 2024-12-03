@@ -25,6 +25,7 @@ export interface DownloadManagerState {
   addToQueue: (id: string, url: string) => void;
   getDownloadElementById: (id: string) => DownloadElement | undefined;
   fetchDownloadedFiles: () => void;
+  deleteDownloadedFile: (id: string) => Promise<void>;
 }
 
 const wantedTags = [
@@ -107,6 +108,30 @@ export const useDownloadManagerStore = create<DownloadManagerState>(
         set({downloadedFiles});
       } catch (error) {
         console.error('Error fetching downloaded files:', error);
+      }
+    },
+
+    deleteDownloadedFile: async (id: string) => {
+      const {downloadedFiles} = get();
+      const fileToDelete = downloadedFiles.find(file => file.id === id);
+
+      if (fileToDelete) {
+        try {
+          // Delete the file from the filesystem
+          await RNFetchBlob.fs.unlink(fileToDelete.path);
+
+          // Update the state to remove the deleted file
+          const updatedDownloadedFiles = downloadedFiles.filter(
+            file => file.id !== id,
+          );
+          set({downloadedFiles: updatedDownloadedFiles});
+
+          console.log(`File ${id} deleted successfully.`);
+        } catch (error) {
+          console.error(`Error deleting file ${id}:`, error);
+        }
+      } else {
+        console.error(`File with ID ${id} not found.`);
       }
     },
   }),

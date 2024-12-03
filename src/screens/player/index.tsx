@@ -5,18 +5,19 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import TrackPlayer, {useProgress} from 'react-native-track-player';
 import {
   BackIcon,
+  FavIcon,
   Forward10seconds,
   NextIcon,
   PlayIcon,
   PrevIcon,
   Previous10seconds,
-  SearchIcon,
+  ShareIcon,
   SolidPause,
 } from '../../assets/svgs';
 import {MText, ProgressBar} from '../../components';
 import {MainStackParamList} from '../../navigations/RootStackNavigator';
 import {usePlayerStore} from '../../store';
-import {metrics, formatTime, hp, wp} from '../../utils';
+import {formatTime, hp, metrics, wp} from '../../utils';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'Player'>;
 
@@ -46,13 +47,10 @@ export function PlayerScreen({navigation}: Props) {
         <MText style={styles.pageTitle}>Now Playing</MText>
         <View style={styles.headerButtonWrapper}>
           <TouchableOpacity style={styles.backButton}>
-            <SearchIcon />
+            <ShareIcon />
           </TouchableOpacity>
           <TouchableOpacity style={styles.backButton}>
-            <Image
-              style={styles.icon}
-              source={require('../../assets/images/favorite.png')}
-            />
+            <FavIcon style={styles.icon} />
           </TouchableOpacity>
         </View>
       </View>
@@ -113,6 +111,12 @@ export function PlayerScreen({navigation}: Props) {
 }
 
 const styles = StyleSheet.create({
+  favIcon: {
+    color: '#fff',
+    width: wp(22),
+    height: wp(22),
+  },
+
   playPause: {
     width: wp(30),
     height: wp(30),

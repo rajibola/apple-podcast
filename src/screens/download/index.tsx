@@ -10,7 +10,8 @@ import {
 import {hp, wp} from '../../utils';
 
 export function DownloadScreen() {
-  const {downloadedFiles, fetchDownloadedFiles} = useDownloadManagerStore();
+  const {downloadedFiles, fetchDownloadedFiles, deleteDownloadedFile} =
+    useDownloadManagerStore();
   const {start, currentTrack} = usePlayerStore();
 
   // Initialize the player and fetch files
@@ -31,6 +32,10 @@ export function DownloadScreen() {
     });
   };
 
+  const handleDelete = (id: string) => {
+    deleteDownloadedFile(id);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.bottomContainer}>
@@ -45,6 +50,7 @@ export function DownloadScreen() {
               item={item}
               onClickPlay={() => handlePlayAudio(item)}
               isCurrent={currentTrack?.id === item.id}
+              onDelete={() => handleDelete(item.id)}
             />
           )}
         />
