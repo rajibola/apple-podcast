@@ -2,11 +2,9 @@ import React from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {FeedItem} from 'react-native-rss-parser';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {MText} from '../../components/customText';
-import {FavListItem} from '../../components/FavListItem';
-import useFavouritesStore from '../../store/favouritesStore';
-import {usePlayerStore} from '../../store/playerStore';
-import {hp, wp} from '../../utils/responsiveness';
+import {MText, FavListItem} from '../../components';
+import {useFavouritesStore, usePlayerStore} from '../../store';
+import {hp, wp} from '../../utils';
 
 export const FavouriteScreen = () => {
   const {favourites, removeFavourite} = useFavouritesStore();
@@ -29,22 +27,20 @@ export const FavouriteScreen = () => {
       <View style={styles.bottomContainer}>
         <MText style={styles.title}>Favourites</MText>
 
-        <View style={styles.songList}>
-          <FlatList
-            contentContainerStyle={styles.songList}
-            data={Array.from(favourites.values())}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({item}) => (
-              <FavListItem
-                item={item}
-                onClickPlay={() => handlePlayAudio(item)}
-                onToggleFav={() => removeFavourite(item.id)}
-                isFavourite={Boolean(favourites.has(item.id))}
-                isCurrent={currentTrack?.id === item.id}
-              />
-            )}
-          />
-        </View>
+        <FlatList
+          contentContainerStyle={styles.songList}
+          data={Array.from(favourites.values())}
+          keyExtractor={item => item.id.toString()}
+          renderItem={({item}) => (
+            <FavListItem
+              item={item}
+              onClickPlay={() => handlePlayAudio(item)}
+              onToggleFav={() => removeFavourite(item.id)}
+              isFavourite={Boolean(favourites.has(item.id))}
+              isCurrent={currentTrack?.id === item.id}
+            />
+          )}
+        />
       </View>
     </SafeAreaView>
   );

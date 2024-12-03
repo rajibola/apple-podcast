@@ -1,11 +1,9 @@
 import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {hp, wp} from '../utils/responsiveness';
-import {MText} from './customText';
-import PlaySvgIcon from '../assets/svgs/PlaySvgIcon';
-import PauseSvgIcon from '../assets/svgs/PauseSvgIcon';
-import {metrics} from '../utils/makeHitSlop';
-import {usePlayerStore} from '../store/playerStore';
+import {hp, wp, metrics} from '../utils';
+import {MText} from './CustomText';
+import {PlaySvgIcon, PauseSvgIcon} from '../assets/svgs';
+import {usePlayerStore} from '../store';
 import TrackPlayer from 'react-native-track-player';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {MainStackParamList} from '../navigations/RootStackNavigator';

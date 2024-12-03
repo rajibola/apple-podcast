@@ -1,12 +1,9 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {FeedItem} from 'react-native-rss-parser';
-import FavIcon from '../assets/svgs/FavIcon';
-import FilledFavIcon from '../assets/svgs/FilledFavIcon';
-import PauseSvgIcon from '../assets/svgs/PauseSvgIcon';
-import PlaySvgIcon from '../assets/svgs/PlaySvgIcon';
-import {hp, wp} from '../utils/responsiveness';
-import {MText} from './customText';
+import {FavIcon, FilledFavIcon, PlaySvgIcon} from '../assets/svgs';
+import {hp, wp} from '../utils';
+import {MText} from './CustomText';
 
 interface IFavListItem {
   item: FeedItem;
@@ -24,7 +21,9 @@ export const FavListItem = ({
   isCurrent,
 }: IFavListItem) => {
   return (
-    <TouchableOpacity onPress={onClickPlay} style={styles.feedList}>
+    <TouchableOpacity
+      onPress={onClickPlay}
+      style={[styles.feedList, isCurrent && styles.current]}>
       <View>
         <MText numberOfLines={2} style={styles.feedTitle}>
           {item.title}
@@ -43,11 +42,7 @@ export const FavListItem = ({
         )}
 
         <TouchableOpacity onPress={onClickPlay}>
-          {!isCurrent ? (
-            <PauseSvgIcon style={styles.pause} />
-          ) : (
-            <PlaySvgIcon style={styles.pause} />
-          )}
+          <PlaySvgIcon style={styles.pause} />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -55,6 +50,9 @@ export const FavListItem = ({
 };
 
 const styles = StyleSheet.create({
+  current: {
+    backgroundColor: '#242424',
+  },
   buttons: {
     flexDirection: 'row',
     gap: wp(10),

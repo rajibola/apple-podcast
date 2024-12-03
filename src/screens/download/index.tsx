@@ -1,16 +1,15 @@
 import React, {useEffect} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {MText} from '../../components/customText';
-import {DownloadListItem} from '../../components/DownloadListItem';
+import {MText, DownloadListItem} from '../../components';
 import {
   DownloadedFile,
   useDownloadManagerStore,
-} from '../../store/downloadStore';
-import {usePlayerStore} from '../../store/playerStore';
-import {hp, wp} from '../../utils/responsiveness';
+  usePlayerStore,
+} from '../../store';
+import {hp, wp} from '../../utils';
 
-export default function DownloadScreen() {
+export function DownloadScreen() {
   const {downloadedFiles, fetchDownloadedFiles} = useDownloadManagerStore();
   const {start, currentTrack} = usePlayerStore();
 

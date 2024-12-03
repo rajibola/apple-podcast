@@ -5,8 +5,8 @@ import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Podcast} from '../api/applePodcast';
 import {RootStackParamList} from '../navigations/BottomTabNavigator';
 import {MainStackParamList} from '../navigations/RootStackNavigator';
-import {hp, wp} from '../utils/responsiveness';
-import {MText} from './customText';
+import {hp, wp} from '../utils';
+import {MText} from './CustomText';
 
 interface SongListItemProps {
   item: Podcast;

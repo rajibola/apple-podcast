@@ -1,7 +1,7 @@
-import React from "react";
-import Svg, { Path, Rect } from "react-native-svg";
+import React from 'react';
+import Svg, {Path, Rect} from 'react-native-svg';
 
-export default function DownloadIcon() {
+export function DownloadIcon() {
   return (
     <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Rect

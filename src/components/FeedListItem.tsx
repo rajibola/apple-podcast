@@ -1,13 +1,15 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {FeedItem} from 'react-native-rss-parser';
-import DownloadSvgIcon from '../assets/svgs/DownloadSvgIcon';
-import FavIcon from '../assets/svgs/FavIcon';
-import PauseSvgIcon from '../assets/svgs/PauseSvgIcon';
-import {DownloadElement} from '../store/downloadStore';
-import {hp, wp} from '../utils/responsiveness';
-import {MText} from './customText';
-import FilledFavIcon from '../assets/svgs/FilledFavIcon';
+import {
+  DownloadSvgIcon,
+  FavIcon,
+  PauseSvgIcon,
+  FilledFavIcon,
+} from '../assets/svgs';
+import {DownloadElement} from '../store';
+import {hp, wp} from '../utils';
+import {MText} from './CustomText';
 
 interface IFeedListItem {
   item: FeedItem;

@@ -2,13 +2,11 @@ import React, {useEffect, useState} from 'react';
 import {FlatList, Image, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import TrackPlayer from 'react-native-track-player';
-import {MText} from '../../components/customText';
-import {SearchBar} from '../../components/SearchBar';
-import {SongListItem} from '../../components/SongListItem';
-import usePodcastsStore from '../../store/podcastsStore';
-import {hp, wp} from '../../utils/responsiveness';
+import {MText, SearchBar, SongListItem} from '../../components';
+import {usePodcastsStore} from '../../store';
+import {hp, wp} from '../../utils';
 
-export default function HomeScreen() {
+export function HomeScreen() {
   const [query, setQuery] = useState<string>('');
   const {podcasts, searchPodcast} = usePodcastsStore();
   const [loading, setLoading] = useState<boolean>(false);

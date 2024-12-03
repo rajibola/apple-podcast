@@ -2,11 +2,13 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {Podcast} from '../api/applePodcast';
-import {TabBar} from '../components/TabBar';
-import DownloadScreen from '../screens/download';
-import {FavouriteScreen} from '../screens/favourite';
-import HomeScreen from '../screens/home';
-import PodcastScreen from '../screens/podcast';
+import {TabBar} from '../components';
+import {
+  DownloadScreen,
+  FavouriteScreen,
+  HomeScreen,
+  PodcastScreen,
+} from '../screens';
 
 export type RootStackParamList = {
   HomeScreen: undefined;

@@ -10,19 +10,20 @@ import {
 } from 'react-native';
 import {FeedItem} from 'react-native-rss-parser';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import BackIcon from '../../assets/svgs/BackIcon';
-import {MText} from '../../components/customText';
-import {FeedListItem} from '../../components/FeedListItem';
+import {BackIcon} from '../../assets/svgs';
+import {MText, FeedListItem} from '../../components';
 import {RootStackParamList} from '../../navigations/BottomTabNavigator';
-import {useDownloadManagerStore} from '../../store/downloadStore';
-import usePodcastsStore from '../../store/podcastsStore';
-import {hp, wp} from '../../utils/responsiveness';
-import {usePlayerStore} from '../../store/playerStore';
-import useFavouritesStore from '../../store/favouritesStore';
+import {
+  useDownloadManagerStore,
+  usePodcastsStore,
+  useFavouritesStore,
+  usePlayerStore,
+} from '../../store';
+import {hp, wp} from '../../utils';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Podcast'>;
 
-export default function PodcastScreen({route, navigation}: Props) {
+export function PodcastScreen({route, navigation}: Props) {
   const {podcast} = route.params;
   const {feed, loadFeed, setFeed} = usePodcastsStore();
   const {addToQueue, getDownloadElementById} = useDownloadManagerStore();
@@ -104,7 +105,7 @@ export default function PodcastScreen({route, navigation}: Props) {
         <FlatList
           contentContainerStyle={styles.songList}
           data={feed.items}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={item => String(item.id)}
           renderItem={({item, index}) => (
             <FeedListItem
               downloadElement={getDownloadElementById(item.id)}

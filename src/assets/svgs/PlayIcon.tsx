@@ -1,7 +1,7 @@
 import React from 'react';
 import Svg, {Path} from 'react-native-svg';
 
-export default function PlayIcon() {
+export function PlayIcon() {
   return (
     <Svg width="21" height="22" viewBox="0 0 21 22" fill="none">
       <Path

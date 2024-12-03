@@ -1,10 +1,9 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import FavIcon from '../assets/svgs/FavIcon';
-import FilledFavIcon from '../assets/svgs/FilledFavIcon';
-import {DownloadedFile} from '../store/downloadStore';
-import {hp, wp} from '../utils/responsiveness';
-import {MText} from './customText';
+import {FavIcon, FilledFavIcon} from '../assets/svgs';
+import {DownloadedFile} from '../store';
+import {hp, wp} from '../utils';
+import {MText} from './CustomText';
 
 interface IDownloadListItem {
   item: DownloadedFile;
@@ -48,7 +47,7 @@ export const DownloadListItem = ({
 
 const styles = StyleSheet.create({
   current: {
-    backgroundColor: '#ffffff67',
+    backgroundColor: '#242424',
   },
   buttons: {
     flexDirection: 'row',

@@ -2,27 +2,25 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import TrackPlayer from 'react-native-track-player';
-import {useProgress} from 'react-native-track-player';
-import BackIcon from '../../assets/svgs/BackIcon';
-import Forward10seconds from '../../assets/svgs/Forward10seconds';
-import NextIcon from '../../assets/svgs/NextIcon';
-import PlayIcon from '../../assets/svgs/PlayIcon';
-import PrevIcon from '../../assets/svgs/PrevIcon';
-import Previous10seconds from '../../assets/svgs/Previous10seconds';
-import ShareIcon from '../../assets/svgs/SearchIcon';
-import SolidPause from '../../assets/svgs/SolidPause';
-import {MText} from '../../components/customText';
+import TrackPlayer, {useProgress} from 'react-native-track-player';
+import {
+  BackIcon,
+  Forward10seconds,
+  NextIcon,
+  PlayIcon,
+  PrevIcon,
+  Previous10seconds,
+  SearchIcon,
+  SolidPause,
+} from '../../assets/svgs';
+import {MText, ProgressBar} from '../../components';
 import {MainStackParamList} from '../../navigations/RootStackNavigator';
-import {usePlayerStore} from '../../store/playerStore';
-import {metrics} from '../../utils/makeHitSlop';
-import {hp, wp} from '../../utils/responsiveness';
-import {ProgressBar} from '../../components/ProgressBar';
-import {formatTime} from '../../utils/formatTime';
+import {usePlayerStore} from '../../store';
+import {metrics, formatTime, hp, wp} from '../../utils';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'Player'>;
 
-export default function PlayerScreen({navigation}: Props) {
+export function PlayerScreen({navigation}: Props) {
   const {
     isPlaying,
     currentTrack,
@@ -48,7 +46,7 @@ export default function PlayerScreen({navigation}: Props) {
         <MText style={styles.pageTitle}>Now Playing</MText>
         <View style={styles.headerButtonWrapper}>
           <TouchableOpacity style={styles.backButton}>
-            <ShareIcon />
+            <SearchIcon />
           </TouchableOpacity>
           <TouchableOpacity style={styles.backButton}>
             <Image

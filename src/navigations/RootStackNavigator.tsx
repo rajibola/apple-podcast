@@ -4,7 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {StatusBar} from 'react-native';
 import React from 'react';
 import BottomTabNavigator from './BottomTabNavigator';
-import PlayerScreen from '../screens/player';
+import {PlayerScreen} from '../screens';
 
 export type MainStackParamList = {
   Tabs: undefined;
