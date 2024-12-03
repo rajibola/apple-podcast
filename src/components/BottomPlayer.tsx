@@ -1,14 +1,15 @@
-import React from 'react';
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {hp, wp, metrics} from '../utils';
-import {MText} from './CustomText';
-import {PlaySvgIcon, PauseSvgIcon} from '../assets/svgs';
-import {usePlayerStore} from '../store';
-import TrackPlayer from 'react-native-track-player';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {MainStackParamList} from '../navigations/RootStackNavigator';
 import {CompositeNavigationProp, useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import React from 'react';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import FastImage from 'react-native-fast-image';
+import TrackPlayer from 'react-native-track-player';
+import {PauseSvgIcon, PlaySvgIcon} from '../assets/svgs';
 import {RootStackParamList} from '../navigations/BottomTabNavigator';
+import {MainStackParamList} from '../navigations/RootStackNavigator';
+import {usePlayerStore} from '../store';
+import {hp, metrics, wp} from '../utils';
+import {MText} from './CustomText';
 
 type SongListItemNavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList, 'HomeScreen'>,
@@ -35,7 +36,13 @@ export const BottomPlayer = () => {
         })
       }>
       <View style={styles.leftSection}>
-        <Image source={{uri: currentTrack?.artwork}} style={styles.image} />
+        <FastImage
+          source={{
+            uri: currentTrack?.artwork,
+            priority: FastImage.priority.high,
+          }}
+          style={styles.image}
+        />
         <MText numberOfLines={2} style={styles.title}>
           {currentTrack?.title}
         </MText>

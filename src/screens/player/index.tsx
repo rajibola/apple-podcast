@@ -1,13 +1,7 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
-import {
-  Alert,
-  Image,
-  Share,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Alert, Share, StyleSheet, TouchableOpacity, View} from 'react-native';
+import FastImage from 'react-native-fast-image';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import TrackPlayer, {useProgress} from 'react-native-track-player';
 import {
@@ -79,9 +73,12 @@ export function PlayerScreen({navigation}: Props) {
       </View>
 
       <View style={styles.wrapper}>
-        <Image
+        <FastImage
           style={styles.podcastCover}
-          source={{uri: currentTrack?.artwork}}
+          source={{
+            uri: currentTrack?.artwork,
+            priority: FastImage.priority.high,
+          }}
         />
         <MText numberOfLines={1} style={styles.songTitle}>
           {currentTrack?.title}
