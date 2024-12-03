@@ -3,21 +3,21 @@ import React, {useCallback, useEffect} from 'react';
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import {FeedItem} from 'react-native-rss-parser';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {BackIcon} from '../../assets/svgs';
-import {MText, FeedListItem} from '../../components';
+import {FeedListItem, MText} from '../../components';
 import {RootStackParamList} from '../../navigations/BottomTabNavigator';
 import {
   useDownloadManagerStore,
-  usePodcastsStore,
   useFavouritesStore,
   usePlayerStore,
+  usePodcastsStore,
 } from '../../store';
 import {hp, wp} from '../../utils';
 
@@ -81,9 +81,12 @@ export function PodcastScreen({route, navigation}: Props) {
       </View>
 
       <View style={styles.wrapper}>
-        <Image
+        <FastImage
           style={styles.podcastCover}
-          source={{uri: podcast.artworkUrl600}}
+          source={{
+            uri: podcast.artworkUrl600,
+            priority: FastImage.priority.high,
+          }}
         />
         <View style={styles.collection}>
           <MText style={styles.songTitle}>{podcast.collectionName}</MText>
