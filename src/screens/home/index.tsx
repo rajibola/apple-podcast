@@ -2,7 +2,12 @@ import React, {useEffect, useState} from 'react';
 import {FlatList, Image, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import TrackPlayer from 'react-native-track-player';
-import {MText, SearchBar, SongListItem} from '../../components';
+import {
+  MText,
+  SearchBar,
+  SongListItem,
+  SongListItemSkeleton,
+} from '../../components';
 import {usePodcastsStore} from '../../store';
 import {hp, wp} from '../../utils';
 
@@ -14,7 +19,7 @@ export function HomeScreen() {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      await searchPodcast(query); // Use Zustand's searchPodcast method
+      await searchPodcast(query);
     } catch (error) {
       console.error('Error searching podcasts:', error);
     }
@@ -24,7 +29,7 @@ export function HomeScreen() {
   useEffect(() => {
     const prefetch = async () => {
       try {
-        await searchPodcast('react native'); // Prefetch some podcasts on initial load
+        await searchPodcast('react native');
       } catch (error) {
         console.error('Error prefetching podcasts:', error);
       }
@@ -65,7 +70,11 @@ export function HomeScreen() {
       </View>
 
       {loading ? (
-        <MText>Loading...</MText>
+        <View style={styles.songList}>
+          {Array.from({length: 10}).map((_, index) => (
+            <SongListItemSkeleton key={index} />
+          ))}
+        </View>
       ) : (
         <FlatList
           contentContainerStyle={styles.songList}
