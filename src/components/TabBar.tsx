@@ -11,6 +11,7 @@ const ICONS = {
   [routes.HOME]: require('../assets/images/home.png'),
   [routes.FAVOURITES]: require('../assets/images/favorite.png'),
   [routes.DOWNLOADS]: require('../assets/images/download-icon.png'),
+  [routes.CATEGORY]: require('../assets/images/category.png'),
 };
 
 export const TabBar = (props: BottomTabBarProps) => {

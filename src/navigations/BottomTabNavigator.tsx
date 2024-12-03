@@ -8,6 +8,7 @@ import {
   FavouriteScreen,
   HomeScreen,
   PodcastScreen,
+  CategoryScreen,
 } from '../screens';
 
 export type RootStackParamList = {
@@ -19,6 +20,7 @@ export type BottomTabParamList = {
   Home: undefined;
   Favourites: undefined;
   Downloads: undefined;
+  Category: undefined;
 };
 
 const HomeStack = createNativeStackNavigator<RootStackParamList>();
@@ -35,9 +37,11 @@ const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 const BottomTabNavigator: React.FC = () => (
   <Tab.Navigator
+    // eslint-disable-next-line react/no-unstable-nested-components
     tabBar={props => <TabBar {...props} />}
     screenOptions={{headerShown: false}}>
     <Tab.Screen name="Home" component={HomeStackNavigator} />
+    <Tab.Screen name="Category" component={CategoryScreen} />
     <Tab.Screen name="Favourites" component={FavouriteScreen} />
     <Tab.Screen name="Downloads" component={DownloadScreen} />
   </Tab.Navigator>

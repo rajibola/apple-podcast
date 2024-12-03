@@ -40,7 +40,7 @@ export function HomeScreen() {
   }, [searchPodcast]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.header}>
         <View style={styles.avatarText}>
           <Image
@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
   songList: {
     gap: hp(20),
     paddingHorizontal: wp(20),
+    paddingBottom: hp(30),
   },
 
   title: {
