@@ -1,5 +1,5 @@
-import React from "react";
-import Svg, { Path, Rect } from "react-native-svg";
+import React from 'react';
+import Svg, {Path, Rect} from 'react-native-svg';
 
 export default function ShareIcon() {
   return (

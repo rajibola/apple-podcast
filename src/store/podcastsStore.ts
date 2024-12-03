@@ -1,83 +1,59 @@
-import {Feed} from 'react-native-rss-parser';
-import axios from 'axios';
 import {create} from 'zustand';
-import {BASE_URL, Podcast} from '../api/applePodcast';
-
-export interface IFeedServices {
-  getFeed(feedUrl: string): Promise<Feed>;
-}
-
-export interface ISearchPodcastServices {
-  searchPodcast(term: string): Promise<Podcast[]>;
-}
+import {getFeedUrlServices, Podcast, searchPodcasts} from '../api/applePodcast';
+import {Feed} from 'react-native-rss-parser';
 
 interface PodcastsState {
-  podcasts: Map<number, Podcast>;
-  feeds: Map<number, Feed>;
-  searches: Map<string, number[]>;
-  searchPodcast: (term: string) => Promise<Podcast[]>;
-  fetchFeed: (podcast: Podcast) => Promise<Feed>;
+  podcasts: Podcast[];
+  feed: Feed | null;
+  cachedResults: Record<string, Podcast[]>;
+  cachedFeeds: Record<string, Feed | null>;
+  setFeed: (feed: Feed | null) => void;
+  searchPodcast: (query: string) => Promise<void>;
+  loadFeed: (feedUrl: string) => Promise<void>;
 }
 
-export const usePodcastsStore = create<PodcastsState>((set, get) => ({
-  podcasts: new Map(),
-  feeds: new Map(),
-  searches: new Map(),
-
-  searchPodcast: async (term: string): Promise<Podcast[]> => {
-    const {podcasts, searches} = get();
-
-    // Return cached results if already searched
-    if (searches.has(term)) {
-      const podcastIds = searches.get(term)!;
-      return podcastIds.map(id => podcasts.get(id)!);
+const usePodcastsStore = create<PodcastsState>((set, get) => ({
+  podcasts: [],
+  feed: null, // Initialize feed as null
+  cachedResults: {},
+  cachedFeeds: {},
+  setFeed: feed => set({feed}), // Update feed state
+  searchPodcast: async (query: string) => {
+    if (query in get().cachedResults) {
+      set({podcasts: get().cachedResults[query]});
+      return;
     }
 
-    // Fetch podcasts using Axios
-    const response = await axios.get<Podcast[]>(
-      `${BASE_URL}/api/search-podcast`,
-      {
-        params: {term},
-      },
-    );
-    const fetchedPodcasts = response.data;
+    try {
+      const results = await searchPodcasts(query);
 
-    // Update podcasts and searches
-    set({
-      podcasts: new Map(
-        Array.from(podcasts).concat(
-          fetchedPodcasts.map(p => [p.trackId, p] as const),
-        ),
-      ),
-      searches: new Map(
-        Array.from(searches).concat([
-          [term, fetchedPodcasts.map(p => p.trackId)],
-        ]),
-      ),
-    });
-
-    return fetchedPodcasts;
+      set(state => {
+        const newCache = {...state.cachedResults, [query]: results};
+        return {podcasts: results, cachedResults: newCache};
+      });
+    } catch (error) {
+      console.error('Error searching podcasts:', error);
+    }
   },
-
-  fetchFeed: async (podcast: Podcast): Promise<Feed> => {
-    const {feeds} = get();
-
-    // Return cached feed if already fetched
-    if (feeds.has(podcast.trackId)) {
-      return feeds.get(podcast.trackId)!;
+  loadFeed: async (feedUrl: string) => {
+    // Check if feed is already cached
+    if (feedUrl in get().cachedFeeds) {
+      get().setFeed(get().cachedFeeds[feedUrl]);
+      return;
     }
 
-    // Fetch feed using Axios
-    const response = await axios.get<Feed>(`${BASE_URL}/api/fetch-feed`, {
-      params: {feedUrl: podcast.feedUrl},
-    });
-    const feed = response.data;
+    try {
+      const feed = await getFeedUrlServices(feedUrl);
 
-    // Update feeds
-    set({
-      feeds: new Map([...feeds, [podcast.trackId, feed]]),
-    });
-
-    return feed;
+      set(state => {
+        const newCache = {...state.cachedFeeds, [feedUrl]: feed};
+        return {cachedFeeds: newCache, feed}; // Set feed directly
+      });
+    } catch (error) {
+      console.error('Error loading feed:', error);
+      set({feed: null}); // Handle error by setting feed to null
+    }
   },
 }));
+
+export default usePodcastsStore;

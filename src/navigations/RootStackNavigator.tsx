@@ -6,16 +6,16 @@ import React from 'react';
 import BottomTabNavigator from './BottomTabNavigator';
 import PlayerScreen from '../screens/player';
 
-export type RootStackParamList = {
+export type MainStackParamList = {
   Tabs: undefined;
   Player: {
-    item: Podcast;
+    item: Podcast | {};
   };
 };
 
-const RootStack = createNativeStackNavigator<RootStackParamList>();
+const RootStack = createNativeStackNavigator<MainStackParamList>();
 
-const RootStackNavigator = () => {
+const RootStackNavigator: React.FC = () => {
   return (
     <NavigationContainer>
       <StatusBar animated barStyle="light-content" />
