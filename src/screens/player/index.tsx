@@ -3,6 +3,7 @@ import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import TrackPlayer from 'react-native-track-player';
+import {useProgress} from 'react-native-track-player';
 import BackIcon from '../../assets/svgs/BackIcon';
 import Forward10seconds from '../../assets/svgs/Forward10seconds';
 import NextIcon from '../../assets/svgs/NextIcon';
@@ -16,6 +17,8 @@ import {MainStackParamList} from '../../navigations/RootStackNavigator';
 import {usePlayerStore} from '../../store/playerStore';
 import {metrics} from '../../utils/makeHitSlop';
 import {hp, wp} from '../../utils/responsiveness';
+import {ProgressBar} from '../../components/ProgressBar';
+import {formatTime} from '../../utils/formatTime';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'Player'>;
 
@@ -28,6 +31,9 @@ export default function PlayerScreen({navigation}: Props) {
     skipToNextTrack,
     skipToPreviousTrack,
   } = usePlayerStore();
+
+  const progress = useProgress();
+  const {position, duration} = progress;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -60,11 +66,15 @@ export default function PlayerScreen({navigation}: Props) {
         />
         <MText style={styles.songTitle}>{currentTrack?.title}</MText>
         <MText style={styles.songSubtitle}>{currentTrack?.artist}</MText>
+
         <View style={styles.timeWrapper}>
-          <MText style={styles.time}>02:21</MText>
-          <MText style={styles.time}>03:22</MText>
+          <MText style={styles.time}>{formatTime(position)}</MText>
+          <MText style={styles.time}>{formatTime(duration)}</MText>
         </View>
-        <View style={styles.playProgress} />
+
+        <View>
+          <ProgressBar />
+        </View>
 
         <View style={styles.bottomButtons}>
           <TouchableOpacity
@@ -120,13 +130,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: wp(20),
     marginTop: hp(33),
-  },
-  playProgress: {
-    height: hp(54),
-    width: '100%',
-    borderWidth: 1,
-    borderColor: 'white',
-    marginTop: hp(10),
   },
   timeWrapper: {
     flexDirection: 'row',
