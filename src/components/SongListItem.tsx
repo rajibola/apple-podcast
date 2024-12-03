@@ -2,7 +2,6 @@ import {CompositeNavigationProp, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
-import Animated from 'react-native-reanimated';
 import {Podcast} from '../api/applePodcast';
 import {RootStackParamList} from '../navigations/BottomTabNavigator';
 import {MainStackParamList} from '../navigations/RootStackNavigator';
@@ -37,11 +36,7 @@ export const SongListItem = ({
       onPress={() => navigate('Podcast', {podcast: item})}
       style={styles.songList}>
       <View style={styles.imageText}>
-        <Animated.Image
-          style={styles.listImage}
-          source={{uri: item.artworkUrl600}}
-          sharedTransitionTag={`podcast-${item.trackId}`}
-        />
+        <Image style={styles.listImage} source={{uri: item.artworkUrl600}} />
         <View style={styles.songText}>
           <MText numberOfLines={1} style={styles.title}>
             {item.trackName}

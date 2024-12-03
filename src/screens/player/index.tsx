@@ -2,7 +2,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {RootStackParamList} from '../../../App';
+import TrackPlayer from 'react-native-track-player';
 import BackIcon from '../../assets/svgs/BackIcon';
 import Forward10seconds from '../../assets/svgs/Forward10seconds';
 import NextIcon from '../../assets/svgs/NextIcon';
@@ -10,13 +10,24 @@ import PlayIcon from '../../assets/svgs/PlayIcon';
 import PrevIcon from '../../assets/svgs/PrevIcon';
 import Previous10seconds from '../../assets/svgs/Previous10seconds';
 import ShareIcon from '../../assets/svgs/SearchIcon';
+import SolidPause from '../../assets/svgs/SolidPause';
 import {MText} from '../../components/customText';
+import {MainStackParamList} from '../../navigations/RootStackNavigator';
+import {usePlayerStore} from '../../store/playerStore';
+import {metrics} from '../../utils/makeHitSlop';
 import {hp, wp} from '../../utils/responsiveness';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Player'>;
+type Props = NativeStackScreenProps<MainStackParamList, 'Player'>;
 
-export default function PlayerScreen({route, navigation}: Props) {
-  const {item} = route.params;
+export default function PlayerScreen({navigation}: Props) {
+  const {
+    isPlaying,
+    currentTrack,
+    seekForward10,
+    seekBackward10,
+    skipToNextTrack,
+    skipToPreviousTrack,
+  } = usePlayerStore();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -43,9 +54,12 @@ export default function PlayerScreen({route, navigation}: Props) {
       </View>
 
       <View style={styles.wrapper}>
-        <Image style={styles.podcastCover} source={{uri: item.artworkUrl600}} />
-        <MText style={styles.songTitle}>{item.collectionName}</MText>
-        <MText style={styles.songSubtitle}>{item.artistName}</MText>
+        <Image
+          style={styles.podcastCover}
+          source={{uri: currentTrack?.artwork}}
+        />
+        <MText style={styles.songTitle}>{currentTrack?.title}</MText>
+        <MText style={styles.songSubtitle}>{currentTrack?.artist}</MText>
         <View style={styles.timeWrapper}>
           <MText style={styles.time}>02:21</MText>
           <MText style={styles.time}>03:22</MText>
@@ -53,13 +67,33 @@ export default function PlayerScreen({route, navigation}: Props) {
         <View style={styles.playProgress} />
 
         <View style={styles.bottomButtons}>
-          <Previous10seconds />
-          <PrevIcon />
-          <TouchableOpacity style={styles.playButton}>
-            <PlayIcon />
+          <TouchableOpacity
+            onPress={seekBackward10}
+            hitSlop={metrics.makeHitSlop(15)}>
+            <Previous10seconds />
           </TouchableOpacity>
-          <NextIcon />
-          <Forward10seconds />
+          <TouchableOpacity
+            onPress={skipToPreviousTrack}
+            hitSlop={metrics.makeHitSlop(15)}>
+            <PrevIcon />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.playButton}
+            onPress={() =>
+              isPlaying ? TrackPlayer.pause() : TrackPlayer.play()
+            }>
+            {isPlaying ? <SolidPause style={styles.playPause} /> : <PlayIcon />}
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={skipToNextTrack}
+            hitSlop={metrics.makeHitSlop(15)}>
+            <NextIcon />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={seekForward10}
+            hitSlop={metrics.makeHitSlop(15)}>
+            <Forward10seconds />
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
@@ -67,6 +101,11 @@ export default function PlayerScreen({route, navigation}: Props) {
 }
 
 const styles = StyleSheet.create({
+  playPause: {
+    width: wp(30),
+    height: wp(30),
+    color: '#333333',
+  },
   playButton: {
     width: wp(60),
     height: wp(60),

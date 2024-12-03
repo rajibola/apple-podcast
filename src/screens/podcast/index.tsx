@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Animated from 'react-native-reanimated';
 import {FeedItem} from 'react-native-rss-parser';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import BackIcon from '../../assets/svgs/BackIcon';
@@ -18,8 +17,7 @@ import {RootStackParamList} from '../../navigations/BottomTabNavigator';
 import {useDownloadManagerStore} from '../../store/downloadStore';
 import usePodcastsStore from '../../store/podcastsStore';
 import {hp, wp} from '../../utils/responsiveness';
-
-export const AnimatedImage = Animated.createAnimatedComponent(Image);
+import {usePlayerStore} from '../../store/playerStore';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Podcast'>;
 
@@ -27,6 +25,7 @@ export default function PodcastScreen({route, navigation}: Props) {
   const {podcast} = route.params;
   const {feed, loadFeed, setFeed} = usePodcastsStore();
   const {addToQueue, getDownloadElementById} = useDownloadManagerStore();
+  const {start, setPlaylistId} = usePlayerStore();
 
   const loadAllFeeds = useCallback(async () => {
     await loadFeed(podcast.feedUrl);
@@ -41,6 +40,19 @@ export default function PodcastScreen({route, navigation}: Props) {
 
     return () => setFeed(null);
   }, [loadAllFeeds, setFeed]);
+
+  const handlePlayAudio = (idx: number) => {
+    const item = feed!.items[idx];
+    setPlaylistId(podcast.feedUrl);
+    start({
+      id: String(idx),
+      url: item.enclosures[0].url,
+      title: item.title,
+      artist: item.authors[0]?.name ?? podcast?.artistName,
+      artwork: item.itunes.image,
+      duration: item.itunes.duration,
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -64,10 +76,9 @@ export default function PodcastScreen({route, navigation}: Props) {
       </View>
 
       <View style={styles.wrapper}>
-        <Animated.Image
+        <Image
           style={styles.podcastCover}
           source={{uri: podcast.artworkUrl600}}
-          sharedTransitionTag={`podcast-${podcast.trackId}`}
         />
         <View style={styles.collection}>
           <MText style={styles.songTitle}>{podcast.collectionName}</MText>
@@ -83,12 +94,13 @@ export default function PodcastScreen({route, navigation}: Props) {
           contentContainerStyle={styles.songList}
           data={feed.items}
           keyExtractor={item => item.id.toString()}
-          renderItem={({item}) => (
+          renderItem={({item, index}) => (
             <FeedListItem
               downloadElement={getDownloadElementById(item.id)}
               onClickDownload={onDownloadPress}
               item={item}
-              artistName={podcast.artistName}
+              // artistName={podcast.artistName}
+              onClickPlay={() => handlePlayAudio(index)}
             />
           )}
         />

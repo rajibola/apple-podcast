@@ -9,7 +9,7 @@ import PlayerScreen from '../screens/player';
 export type MainStackParamList = {
   Tabs: undefined;
   Player: {
-    item: Podcast;
+    item: Podcast | {};
   };
 };
 
