@@ -5,4 +5,5 @@ export const routes = {
   PODCAST: 'Podcast',
   FAVOURITES: 'Favourites',
   DOWNLOADS: 'Downloads',
+  CATEGORY: 'Category',
 };
