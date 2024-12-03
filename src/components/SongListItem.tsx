@@ -47,7 +47,14 @@ export const SongListItem = ({item}: SongListItemProps) => {
         </View>
       </View>
       <View style={styles.flex}>
-        {/* TODO: mke it play the first item on podcast */}
+        {/* FIXME: this is collection, so I put the favourite feature in the podcast item  */}
+        <TouchableOpacity onPress={() => null}>
+          <Image
+            style={styles.icon}
+            source={require('../assets/images/favorite.png')}
+          />
+        </TouchableOpacity>
+        {/* TODO: make it play the first item on podcast */}
         <TouchableOpacity onPress={() => null}>
           <Image
             style={styles.icon}
@@ -79,12 +86,12 @@ export const SongListItemSkeleton = () => {
     );
     shimmer.start();
 
-    return () => shimmer.stop(); // Clean up animation on component unmount
+    return () => shimmer.stop();
   }, [shimmerAnimation]);
 
   const shimmerBackground = shimmerAnimation.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#ccc', '#e0e0e0'], // Colors for shimmer effect
+    outputRange: ['#ccccccd5', '#e0e0e0da'],
   });
 
   return (
