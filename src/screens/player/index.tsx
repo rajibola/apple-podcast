@@ -64,8 +64,12 @@ export default function PlayerScreen({navigation}: Props) {
           style={styles.podcastCover}
           source={{uri: currentTrack?.artwork}}
         />
-        <MText style={styles.songTitle}>{currentTrack?.title}</MText>
-        <MText style={styles.songSubtitle}>{currentTrack?.artist}</MText>
+        <MText numberOfLines={1} style={styles.songTitle}>
+          {currentTrack?.title}
+        </MText>
+        <MText numberOfLines={1} style={styles.songSubtitle}>
+          {currentTrack?.artist}
+        </MText>
 
         <View style={styles.timeWrapper}>
           <MText style={styles.time}>{formatTime(position)}</MText>

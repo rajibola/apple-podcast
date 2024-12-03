@@ -8,15 +8,7 @@ import {MainStackParamList} from '../navigations/RootStackNavigator';
 import {hp, wp} from '../utils/responsiveness';
 import {MText} from './customText';
 
-type ActionButtonType = 'favorite' | 'download';
-
-const actionButtonImages: Record<ActionButtonType, any> = {
-  favorite: require('../assets/images/favorite.png'),
-  download: require('../assets/images/download-icon.png'),
-};
-
 interface SongListItemProps {
-  actionButtonType?: ActionButtonType;
   item: Podcast;
 }
 
@@ -25,10 +17,7 @@ type SongListItemNavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<MainStackParamList, 'Player'>
 >;
 
-export const SongListItem = ({
-  actionButtonType = 'favorite',
-  item,
-}: SongListItemProps) => {
+export const SongListItem = ({item}: SongListItemProps) => {
   const {navigate} = useNavigation<SongListItemNavigationProp>();
 
   return (
@@ -47,12 +36,6 @@ export const SongListItem = ({
         </View>
       </View>
       <View style={styles.flex}>
-        <TouchableOpacity>
-          <Image
-            style={styles.icon}
-            source={actionButtonImages[actionButtonType]}
-          />
-        </TouchableOpacity>
         <TouchableOpacity onPress={() => navigate('Player', {item})}>
           <Image
             style={styles.icon}

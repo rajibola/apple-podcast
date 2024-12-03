@@ -1,32 +1,28 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {FeedItem} from 'react-native-rss-parser';
-import DownloadSvgIcon from '../assets/svgs/DownloadSvgIcon';
 import FavIcon from '../assets/svgs/FavIcon';
+import FilledFavIcon from '../assets/svgs/FilledFavIcon';
 import PauseSvgIcon from '../assets/svgs/PauseSvgIcon';
-import {DownloadElement} from '../store/downloadStore';
+import PlaySvgIcon from '../assets/svgs/PlaySvgIcon';
 import {hp, wp} from '../utils/responsiveness';
 import {MText} from './customText';
-import FilledFavIcon from '../assets/svgs/FilledFavIcon';
 
-interface IFeedListItem {
+interface IFavListItem {
   item: FeedItem;
-  onClickDownload?: (feedItem: FeedItem) => void;
-  downloadElement?: DownloadElement;
   onClickPlay: () => void;
   onToggleFav?: () => void;
   isFavourite?: Boolean;
-  isPlaying?: Boolean;
+  isCurrent?: Boolean;
 }
 
-export const FeedListItem = ({
+export const FavListItem = ({
   item,
-  onClickDownload,
-  downloadElement,
   onClickPlay,
   onToggleFav,
   isFavourite,
-}: IFeedListItem) => {
+  isCurrent,
+}: IFavListItem) => {
   return (
     <TouchableOpacity onPress={onClickPlay} style={styles.feedList}>
       <View>
@@ -45,15 +41,14 @@ export const FeedListItem = ({
             <FavIcon style={styles.pause} />
           </TouchableOpacity>
         )}
-        {onClickDownload && (
-          <TouchableOpacity onPress={() => onClickDownload(item)}>
-            {downloadElement ? (
-              <PauseSvgIcon style={styles.pause} />
-            ) : (
-              <DownloadSvgIcon style={styles.pause} />
-            )}
-          </TouchableOpacity>
-        )}
+
+        <TouchableOpacity onPress={onClickPlay}>
+          {!isCurrent ? (
+            <PauseSvgIcon style={styles.pause} />
+          ) : (
+            <PlaySvgIcon style={styles.pause} />
+          )}
+        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
