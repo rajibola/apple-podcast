@@ -1,6 +1,13 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  Image,
+  Share,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import TrackPlayer, {useProgress} from 'react-native-track-player';
 import {
@@ -34,6 +41,22 @@ export function PlayerScreen({navigation}: Props) {
   const progress = useProgress();
   const {position, duration} = progress;
 
+  const onShare = async () => {
+    if (!currentTrack || !currentTrack.title || !currentTrack.artist) {
+      Alert.alert('Track information is incomplete');
+      return;
+    }
+
+    try {
+      Share.share({
+        message: `Check out this podcast: "${currentTrack.title}" by ${currentTrack.artist}`,
+        url: currentTrack.url,
+      });
+    } catch (error: any) {
+      Alert.alert('Error sharing', error.message);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -46,7 +69,7 @@ export function PlayerScreen({navigation}: Props) {
         </View>
         <MText style={styles.pageTitle}>Now Playing</MText>
         <View style={styles.headerButtonWrapper}>
-          <TouchableOpacity style={styles.backButton}>
+          <TouchableOpacity onPress={onShare} style={styles.backButton}>
             <ShareIcon />
           </TouchableOpacity>
           <TouchableOpacity style={styles.backButton}>
