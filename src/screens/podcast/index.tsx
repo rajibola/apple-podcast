@@ -3,26 +3,27 @@ import React, {useCallback, useEffect} from 'react';
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import {FeedItem} from 'react-native-rss-parser';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import BackIcon from '../../assets/svgs/BackIcon';
-import {MText} from '../../components/customText';
-import {FeedListItem} from '../../components/FeedListItem';
+import {BackIcon} from '../../assets/svgs';
+import {FeedListItem, MText} from '../../components';
 import {RootStackParamList} from '../../navigations/BottomTabNavigator';
-import {useDownloadManagerStore} from '../../store/downloadStore';
-import usePodcastsStore from '../../store/podcastsStore';
-import {hp, wp} from '../../utils/responsiveness';
-import {usePlayerStore} from '../../store/playerStore';
-import useFavouritesStore from '../../store/favouritesStore';
+import {
+  useDownloadManagerStore,
+  useFavouritesStore,
+  usePlayerStore,
+  usePodcastsStore,
+} from '../../store';
+import {hp, wp} from '../../utils';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Podcast'>;
 
-export default function PodcastScreen({route, navigation}: Props) {
+export function PodcastScreen({route, navigation}: Props) {
   const {podcast} = route.params;
   const {feed, loadFeed, setFeed} = usePodcastsStore();
   const {addToQueue, getDownloadElementById} = useDownloadManagerStore();
@@ -76,20 +77,16 @@ export default function PodcastScreen({route, navigation}: Props) {
           </TouchableOpacity>
         </View>
         <MText style={styles.pageTitle}>Podcast</MText>
-        <View style={styles.headerButtonWrapper}>
-          <TouchableOpacity style={styles.backButton}>
-            <Image
-              style={styles.icon}
-              source={require('../../assets/images/favorite.png')}
-            />
-          </TouchableOpacity>
-        </View>
+        <View style={styles.headerButtonWrapper} />
       </View>
 
       <View style={styles.wrapper}>
-        <Image
+        <FastImage
           style={styles.podcastCover}
-          source={{uri: podcast.artworkUrl600}}
+          source={{
+            uri: podcast.artworkUrl600,
+            priority: FastImage.priority.high,
+          }}
         />
         <View style={styles.collection}>
           <MText style={styles.songTitle}>{podcast.collectionName}</MText>
@@ -104,7 +101,7 @@ export default function PodcastScreen({route, navigation}: Props) {
         <FlatList
           contentContainerStyle={styles.songList}
           data={feed.items}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={item => String(item.id)}
           renderItem={({item, index}) => (
             <FeedListItem
               downloadElement={getDownloadElementById(item.id)}
@@ -203,6 +200,7 @@ const styles = StyleSheet.create({
   headerButtonWrapper: {
     flexDirection: 'row',
     gap: wp(8),
+    minWidth: wp(40),
   },
   pageTitle: {
     color: '#fff',

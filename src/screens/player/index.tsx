@@ -1,28 +1,28 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {Alert, Share, StyleSheet, TouchableOpacity, View} from 'react-native';
+import FastImage from 'react-native-fast-image';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import TrackPlayer from 'react-native-track-player';
-import {useProgress} from 'react-native-track-player';
-import BackIcon from '../../assets/svgs/BackIcon';
-import Forward10seconds from '../../assets/svgs/Forward10seconds';
-import NextIcon from '../../assets/svgs/NextIcon';
-import PlayIcon from '../../assets/svgs/PlayIcon';
-import PrevIcon from '../../assets/svgs/PrevIcon';
-import Previous10seconds from '../../assets/svgs/Previous10seconds';
-import ShareIcon from '../../assets/svgs/SearchIcon';
-import SolidPause from '../../assets/svgs/SolidPause';
-import {MText} from '../../components/customText';
+import TrackPlayer, {useProgress} from 'react-native-track-player';
+import {
+  BackIcon,
+  FavIcon,
+  Forward10seconds,
+  NextIcon,
+  PlayIcon,
+  PrevIcon,
+  Previous10seconds,
+  ShareIcon,
+  SolidPause,
+} from '../../assets/svgs';
+import {MText, ProgressBar} from '../../components';
 import {MainStackParamList} from '../../navigations/RootStackNavigator';
-import {usePlayerStore} from '../../store/playerStore';
-import {metrics} from '../../utils/makeHitSlop';
-import {hp, wp} from '../../utils/responsiveness';
-import {ProgressBar} from '../../components/ProgressBar';
-import {formatTime} from '../../utils/formatTime';
+import {usePlayerStore} from '../../store';
+import {formatTime, hp, metrics, wp} from '../../utils';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'Player'>;
 
-export default function PlayerScreen({navigation}: Props) {
+export function PlayerScreen({navigation}: Props) {
   const {
     isPlaying,
     currentTrack,
@@ -34,6 +34,22 @@ export default function PlayerScreen({navigation}: Props) {
 
   const progress = useProgress();
   const {position, duration} = progress;
+
+  const onShare = async () => {
+    if (!currentTrack || !currentTrack.title || !currentTrack.artist) {
+      Alert.alert('Track information is incomplete');
+      return;
+    }
+
+    try {
+      Share.share({
+        message: `Check out this podcast: "${currentTrack.title}" by ${currentTrack.artist}`,
+        url: currentTrack.url,
+      });
+    } catch (error: any) {
+      Alert.alert('Error sharing', error.message);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -47,22 +63,22 @@ export default function PlayerScreen({navigation}: Props) {
         </View>
         <MText style={styles.pageTitle}>Now Playing</MText>
         <View style={styles.headerButtonWrapper}>
-          <TouchableOpacity style={styles.backButton}>
+          <TouchableOpacity onPress={onShare} style={styles.backButton}>
             <ShareIcon />
           </TouchableOpacity>
           <TouchableOpacity style={styles.backButton}>
-            <Image
-              style={styles.icon}
-              source={require('../../assets/images/favorite.png')}
-            />
+            <FavIcon style={styles.icon} />
           </TouchableOpacity>
         </View>
       </View>
 
       <View style={styles.wrapper}>
-        <Image
+        <FastImage
           style={styles.podcastCover}
-          source={{uri: currentTrack?.artwork}}
+          source={{
+            uri: currentTrack?.artwork,
+            priority: FastImage.priority.high,
+          }}
         />
         <MText numberOfLines={1} style={styles.songTitle}>
           {currentTrack?.title}
@@ -115,6 +131,12 @@ export default function PlayerScreen({navigation}: Props) {
 }
 
 const styles = StyleSheet.create({
+  favIcon: {
+    color: '#fff',
+    width: wp(22),
+    height: wp(22),
+  },
+
   playPause: {
     width: wp(30),
     height: wp(30),

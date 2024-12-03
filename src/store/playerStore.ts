@@ -1,6 +1,6 @@
 import TrackPlayer from 'react-native-track-player';
 import {create} from 'zustand';
-import usePodcastsStore from './podcastsStore';
+import {usePodcastsStore} from '.';
 
 interface ITrack {
   id?: string;

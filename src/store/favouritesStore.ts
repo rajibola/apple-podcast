@@ -7,7 +7,7 @@ interface FavouritesStore {
   removeFavourite: (id: string) => void;
 }
 
-const useFavouritesStore = create<FavouritesStore>(set => ({
+export const useFavouritesStore = create<FavouritesStore>(set => ({
   favourites: new Map(),
 
   addFavourite: item =>
@@ -24,5 +24,3 @@ const useFavouritesStore = create<FavouritesStore>(set => ({
       return {favourites: newFavourites};
     }),
 }));
-
-export default useFavouritesStore;

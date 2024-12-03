@@ -1,7 +1,7 @@
 import React from 'react';
-import SearchIcon from '../assets/svgs/SearchIcon';
+import {SearchIcon} from '../assets/svgs';
 import {StyleSheet, TextInput, TextInputProps, View} from 'react-native';
-import {hp, wp} from '../utils/responsiveness';
+import {hp, wp} from '../utils';
 
 export const SearchBar = (props: TextInputProps) => {
   return (

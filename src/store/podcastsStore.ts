@@ -12,7 +12,7 @@ interface PodcastsState {
   loadFeed: (feedUrl: string) => Promise<void>;
 }
 
-const usePodcastsStore = create<PodcastsState>((set, get) => ({
+export const usePodcastsStore = create<PodcastsState>((set, get) => ({
   podcasts: [],
   feed: null, // Initialize feed as null
   cachedResults: {},
@@ -55,5 +55,3 @@ const usePodcastsStore = create<PodcastsState>((set, get) => ({
     }
   },
 }));
-
-export default usePodcastsStore;

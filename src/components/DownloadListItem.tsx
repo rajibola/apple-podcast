@@ -1,24 +1,21 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import FavIcon from '../assets/svgs/FavIcon';
-import FilledFavIcon from '../assets/svgs/FilledFavIcon';
-import {DownloadedFile} from '../store/downloadStore';
-import {hp, wp} from '../utils/responsiveness';
-import {MText} from './customText';
+import {DeleteIcon} from '../assets/svgs';
+import {DownloadedFile} from '../store';
+import {hp, wp} from '../utils';
+import {MText} from './CustomText';
 
 interface IDownloadListItem {
   item: DownloadedFile;
   onClickPlay: () => void;
-  onToggleFav?: () => void;
-  isFavourite?: Boolean;
+  onDelete?: () => void;
   isCurrent?: Boolean;
 }
 
 export const DownloadListItem = ({
   item,
   onClickPlay,
-  onToggleFav,
-  isFavourite,
+  onDelete,
   isCurrent,
 }: IDownloadListItem) => {
   return (
@@ -32,15 +29,9 @@ export const DownloadListItem = ({
         <MText style={styles.feedDuration}>{item.artist}</MText>
       </View>
       <View style={styles.buttons}>
-        {isFavourite ? (
-          <TouchableOpacity onPress={onToggleFav}>
-            <FilledFavIcon style={styles.pause} />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={onToggleFav}>
-            <FavIcon style={styles.pause} />
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity onPress={onDelete}>
+          <DeleteIcon style={styles.pause} />
+        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
@@ -48,7 +39,7 @@ export const DownloadListItem = ({
 
 const styles = StyleSheet.create({
   current: {
-    backgroundColor: '#ffffff67',
+    backgroundColor: '#242424',
   },
   buttons: {
     flexDirection: 'row',

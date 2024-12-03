@@ -2,11 +2,7 @@ import React from 'react';
 import {StyleProp, ViewStyle} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 
-export default function DownloadSvgIcon({
-  style,
-}: {
-  style?: StyleProp<ViewStyle>;
-}) {
+export function DownloadSvgIcon({style}: {style?: StyleProp<ViewStyle>}) {
   return (
     <Svg
       fill="none"

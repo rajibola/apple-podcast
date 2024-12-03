@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleProp, ViewStyle} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 
-export default function SolidPause({style}: {style?: StyleProp<ViewStyle>}) {
+export function SolidPause({style}: {style?: StyleProp<ViewStyle>}) {
   return (
     <Svg style={style} viewBox="0 0 24 24" fill="currentColor">
       <Path
