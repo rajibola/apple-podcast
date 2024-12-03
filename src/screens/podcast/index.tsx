@@ -1,51 +1,70 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Feed} from 'react-native-rss-parser';
+import FastImage from 'react-native-fast-image';
+import {FeedItem} from 'react-native-rss-parser';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {getFeedUrlServices} from '../../api/applePodcast';
-import BackIcon from '../../assets/svgs/BackIcon';
-import {MText} from '../../components/customText';
+import {BackIcon} from '../../assets/svgs';
+import {FeedListItem, MText} from '../../components';
 import {RootStackParamList} from '../../navigations/BottomTabNavigator';
-import {usePlayerStore} from '../../store/playerStore';
-import {hp, wp} from '../../utils/responsiveness';
+import {
+  useDownloadManagerStore,
+  useFavouritesStore,
+  usePlayerStore,
+  usePodcastsStore,
+} from '../../store';
+import {hp, wp} from '../../utils';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Podcast'>;
 
-export default function PodcastScreen({route, navigation}: Props) {
+export function PodcastScreen({route, navigation}: Props) {
   const {podcast} = route.params;
-  const playstore = usePlayerStore();
-  const [feed, setFeed] = useState<Feed | null>(null);
+  const {feed, loadFeed, setFeed} = usePodcastsStore();
+  const {addToQueue, getDownloadElementById} = useDownloadManagerStore();
+  const {start, setPlaylistId} = usePlayerStore();
+  const {addFavourite, removeFavourite, favourites} = useFavouritesStore();
 
   const loadAllFeeds = useCallback(async () => {
-    const result = await getFeedUrlServices(podcast.feedUrl);
-    setFeed(result);
-  }, [podcast.feedUrl]);
+    await loadFeed(podcast.feedUrl);
+  }, [podcast.feedUrl, loadFeed]);
+
+  const onDownloadPress = (feedItem: FeedItem) => {
+    addToQueue(feedItem.id, feedItem.enclosures[0].url);
+  };
 
   useEffect(() => {
     loadAllFeeds();
-  }, [loadAllFeeds]);
 
-  if (!feed) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: '#000',
-        }}>
-        <ActivityIndicator color="#f2f2f2" size="large" />
-      </View>
-    );
-  }
+    return () => setFeed(null);
+  }, [loadAllFeeds, setFeed]);
+
+  const handlePlayAudio = (idx: number) => {
+    const item = feed!.items[idx];
+    setPlaylistId(podcast.feedUrl);
+    start({
+      id: String(idx),
+      url: item.enclosures[0].url,
+      title: item.title,
+      artist: item.authors[0]?.name ?? podcast?.artistName,
+      artwork: item.itunes.image,
+      duration: item.itunes.duration,
+    });
+  };
+
+  const handleToggleFav = (idx: number) => {
+    const item = feed!.items[idx];
+    if (favourites.has(item.id)) {
+      removeFavourite(item.id);
+    } else {
+      addFavourite(item);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -58,70 +77,57 @@ export default function PodcastScreen({route, navigation}: Props) {
           </TouchableOpacity>
         </View>
         <MText style={styles.pageTitle}>Podcast</MText>
-        <View style={styles.headerButtonWrapper}>
-          <TouchableOpacity style={styles.backButton}>
-            <Image
-              style={styles.icon}
-              source={require('../../assets/images/favorite.png')}
-            />
-          </TouchableOpacity>
-        </View>
+        <View style={styles.headerButtonWrapper} />
       </View>
 
       <View style={styles.wrapper}>
-        <Image
+        <FastImage
           style={styles.podcastCover}
-          source={{uri: podcast.artworkUrl600}}
+          source={{
+            uri: podcast.artworkUrl600,
+            priority: FastImage.priority.high,
+          }}
         />
-        <View style={{flex: 1, alignSelf: 'flex-end', paddingVertical: hp(10)}}>
+        <View style={styles.collection}>
           <MText style={styles.songTitle}>{podcast.collectionName}</MText>
           <MText style={styles.songSubtitle}>{podcast.artistName}</MText>
         </View>
       </View>
-
-      <FlatList
-        contentContainerStyle={styles.songList}
-        data={feed.items}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({item}) => (
-          <TouchableOpacity
-            onPress={async () => {
-              playstore.start({
-                id: item.id,
-                url: item.enclosures[0].url,
-                title: item.title,
-                artist: podcast.artistName,
-                artwork: item.itunes.image,
-                duration: item.itunes.duration,
-              });
-            }}
-            style={styles.feedList}>
-            <MText style={styles.feedTitle}>{item.title}</MText>
-            <MText style={styles.feedDuration}>{item.itunes.duration}</MText>
-          </TouchableOpacity>
-        )}
-      />
+      {!feed ? (
+        <View style={styles.loading}>
+          <ActivityIndicator color="#f2f2f2" size="large" />
+        </View>
+      ) : (
+        <FlatList
+          contentContainerStyle={styles.songList}
+          data={feed.items}
+          keyExtractor={item => String(item.id)}
+          renderItem={({item, index}) => (
+            <FeedListItem
+              downloadElement={getDownloadElementById(item.id)}
+              onClickDownload={onDownloadPress}
+              item={item}
+              onClickPlay={() => handlePlayAudio(index)}
+              onToggleFav={() => handleToggleFav(index)}
+              isFavourite={Boolean(favourites.has(item.id))}
+            />
+          )}
+        />
+      )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  feedDuration: {
-    color: '#fff',
-    opacity: 0.7,
-    fontSize: hp(12),
+  collection: {
+    flex: 1,
+    alignSelf: 'flex-end',
+    paddingVertical: hp(10),
   },
-  feedTitle: {
-    color: '#fff',
-    fontWeight: '500',
-    marginBottom: hp(4),
-    fontSize: hp(13),
-  },
-  feedList: {
-    padding: hp(5),
-    paddingVertical: hp(8),
-    borderBottomWidth: hp(0.5),
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   songList: {
     gap: hp(10),
@@ -194,6 +200,7 @@ const styles = StyleSheet.create({
   headerButtonWrapper: {
     flexDirection: 'row',
     gap: wp(8),
+    minWidth: wp(40),
   },
   pageTitle: {
     color: '#fff',

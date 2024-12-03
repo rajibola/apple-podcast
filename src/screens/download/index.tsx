@@ -1,16 +1,59 @@
-import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, {useEffect} from 'react';
+import {FlatList, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {MText} from '../../components/customText';
-import {hp, wp} from '../../utils/responsiveness';
+import {MText, DownloadListItem} from '../../components';
+import {
+  DownloadedFile,
+  useDownloadManagerStore,
+  usePlayerStore,
+} from '../../store';
+import {hp, wp} from '../../utils';
 
-export default function DownloadScreen() {
+export function DownloadScreen() {
+  const {downloadedFiles, fetchDownloadedFiles, deleteDownloadedFile} =
+    useDownloadManagerStore();
+  const {start, currentTrack} = usePlayerStore();
+
+  // Initialize the player and fetch files
+  useEffect(() => {
+    const init = async () => {
+      fetchDownloadedFiles();
+    };
+    init();
+  }, [fetchDownloadedFiles]);
+
+  const handlePlayAudio = (item: DownloadedFile) => {
+    start({
+      artist: item.artist,
+      id: item.id,
+      title: item.title,
+      url: `file://${item.path}`,
+      artwork: item.artwork,
+    });
+  };
+
+  const handleDelete = (id: string) => {
+    deleteDownloadedFile(id);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.bottomContainer}>
         <MText style={styles.title}>Downloads</MText>
 
-        <View style={styles.songList}></View>
+        <FlatList
+          contentContainerStyle={styles.songList}
+          data={downloadedFiles}
+          keyExtractor={item => item.id.toString()}
+          renderItem={({item}) => (
+            <DownloadListItem
+              item={item}
+              onClickPlay={() => handlePlayAudio(item)}
+              isCurrent={currentTrack?.id === item.id}
+              onDelete={() => handleDelete(item.id)}
+            />
+          )}
+        />
       </View>
     </SafeAreaView>
   );

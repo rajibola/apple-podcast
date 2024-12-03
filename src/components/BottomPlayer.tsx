@@ -1,23 +1,48 @@
+import {CompositeNavigationProp, useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React from 'react';
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {hp, wp} from '../utils/responsiveness';
-import {MText} from './customText';
-import PlaySvgIcon from '../assets/svgs/PlaySvgIcon';
-import PauseSvgIcon from '../assets/svgs/PauseSvgIcon';
-import {metrics} from '../utils/makeHitSlop';
-import {usePlayerStore} from '../store/playerStore';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import FastImage from 'react-native-fast-image';
 import TrackPlayer from 'react-native-track-player';
+import {PauseSvgIcon, PlaySvgIcon} from '../assets/svgs';
+import {RootStackParamList} from '../navigations/BottomTabNavigator';
+import {MainStackParamList} from '../navigations/RootStackNavigator';
+import {usePlayerStore} from '../store';
+import {hp, metrics, wp} from '../utils';
+import {MText} from './CustomText';
+
+type SongListItemNavigationProp = CompositeNavigationProp<
+  NativeStackNavigationProp<RootStackParamList, 'HomeScreen'>,
+  NativeStackNavigationProp<MainStackParamList, 'Player'>
+>;
 
 export const BottomPlayer = () => {
   const {isPlaying, currentTrack} = usePlayerStore();
+  const {navigate} = useNavigation<SongListItemNavigationProp>();
   if (!currentTrack) {
     return null;
   }
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() =>
+        navigate('Player', {
+          item: {
+            artworkUrl600: currentTrack.artwork,
+            collectionName: currentTrack.title,
+            artistName: currentTrack.artist,
+          },
+        })
+      }>
       <View style={styles.leftSection}>
-        <Image source={{uri: currentTrack?.artwork}} style={styles.image} />
+        <FastImage
+          source={{
+            uri: currentTrack?.artwork,
+            priority: FastImage.priority.high,
+          }}
+          style={styles.image}
+        />
         <MText numberOfLines={2} style={styles.title}>
           {currentTrack?.title}
         </MText>
@@ -35,11 +60,7 @@ export const BottomPlayer = () => {
           <PlaySvgIcon style={styles.playPause} />
         </TouchableOpacity>
       )}
-
-      {/* <TouchableOpacity onPress={seek30}>
-        <View style={[styles.playPause, {backgroundColor: 'red'}]} />
-      </TouchableOpacity> */}
-    </View>
+    </TouchableOpacity>
   );
 };
 

@@ -1,38 +1,42 @@
-import React from 'react';
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {hp, wp} from '../utils/responsiveness';
-import {MText} from './customText';
-import {Podcast} from '../api/applePodcast';
-import {useNavigation} from '@react-navigation/native';
+import {CompositeNavigationProp, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../../App';
-
-type ActionButtonType = 'favorite' | 'download';
-
-const actionButtonImages: Record<ActionButtonType, any> = {
-  favorite: require('../assets/images/favorite.png'),
-  download: require('../assets/images/download-icon.png'),
-};
+import React, {useEffect, useRef} from 'react';
+import {
+  Animated,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {Podcast} from '../api/applePodcast';
+import {RootStackParamList} from '../navigations/BottomTabNavigator';
+import {MainStackParamList} from '../navigations/RootStackNavigator';
+import {hp, wp} from '../utils';
+import {MText} from './CustomText';
+import FastImage from 'react-native-fast-image';
 
 interface SongListItemProps {
-  actionButtonType?: ActionButtonType;
   item: Podcast;
 }
 
-type IHomeScreenProp = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
+type SongListItemNavigationProp = CompositeNavigationProp<
+  NativeStackNavigationProp<RootStackParamList, 'HomeScreen'>,
+  NativeStackNavigationProp<MainStackParamList, 'Player'>
+>;
 
-export const SongListItem = ({
-  actionButtonType = 'favorite',
-  item,
-}: SongListItemProps) => {
-  const {navigate} = useNavigation<IHomeScreenProp>();
+export const SongListItem = ({item}: SongListItemProps) => {
+  const {navigate} = useNavigation<SongListItemNavigationProp>();
 
   return (
     <TouchableOpacity
       onPress={() => navigate('Podcast', {podcast: item})}
       style={styles.songList}>
       <View style={styles.imageText}>
-        <Image style={styles.listImage} source={{uri: item.artworkUrl600}} />
+        <FastImage
+          style={styles.listImage}
+          source={{uri: item.artworkUrl600, priority: FastImage.priority.high}}
+          resizeMode={FastImage.resizeMode.cover}
+        />
         <View style={styles.songText}>
           <MText numberOfLines={1} style={styles.title}>
             {item.trackName}
@@ -43,13 +47,8 @@ export const SongListItem = ({
         </View>
       </View>
       <View style={styles.flex}>
-        <TouchableOpacity>
-          <Image
-            style={styles.icon}
-            source={actionButtonImages[actionButtonType]}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigate('Player', {item})}>
+        {/* TODO: mke it play the first item on podcast */}
+        <TouchableOpacity onPress={() => null}>
           <Image
             style={styles.icon}
             source={require('../assets/images/playcircle.png')}
@@ -60,7 +59,93 @@ export const SongListItem = ({
   );
 };
 
+export const SongListItemSkeleton = () => {
+  const shimmerAnimation = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const shimmer = Animated.loop(
+      Animated.sequence([
+        Animated.timing(shimmerAnimation, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(shimmerAnimation, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    shimmer.start();
+
+    return () => shimmer.stop(); // Clean up animation on component unmount
+  }, [shimmerAnimation]);
+
+  const shimmerBackground = shimmerAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['#ccc', '#e0e0e0'], // Colors for shimmer effect
+  });
+
+  return (
+    <View style={styles.songList}>
+      {/* Animated Placeholder for Image */}
+      <Animated.View
+        style={[styles.imageSkeleton, {backgroundColor: shimmerBackground}]}
+      />
+      {/* Animated Placeholder for Text */}
+      <View style={styles.textContainer}>
+        <Animated.View
+          style={[styles.titleSkeleton, {backgroundColor: shimmerBackground}]}
+        />
+        <Animated.View
+          style={[
+            styles.subtitleSkeleton,
+            {backgroundColor: shimmerBackground},
+          ]}
+        />
+      </View>
+      {/* Animated Placeholder for Play Icon */}
+      <Animated.View
+        style={[styles.iconSkeleton, {backgroundColor: shimmerBackground}]}
+      />
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
+  songList: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  imageSkeleton: {
+    width: wp(60.2),
+    height: wp(56),
+    borderRadius: wp(5),
+  },
+  textContainer: {
+    marginLeft: wp(13.97),
+    maxWidth: wp(182),
+    flex: 1,
+    justifyContent: 'center',
+    gap: hp(5),
+  },
+  titleSkeleton: {
+    width: wp(100),
+    height: hp(10),
+    borderRadius: wp(2),
+  },
+  subtitleSkeleton: {
+    width: wp(140),
+    height: hp(8),
+    borderRadius: wp(2),
+  },
+  iconSkeleton: {
+    width: wp(26),
+    height: wp(24),
+    borderRadius: wp(12),
+  },
   flex: {
     flexDirection: 'row',
     gap: wp(9),
@@ -88,11 +173,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: wp(14),
   },
-  songList: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
+
   listImage: {
     width: wp(60.2),
     height: wp(56),

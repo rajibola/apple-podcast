@@ -2,18 +2,18 @@ import React from 'react';
 import {StyleProp, ViewStyle} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 
-export function PauseSvgIcon({style}: {style?: StyleProp<ViewStyle>}) {
+export function FavIcon({style}: {style?: StyleProp<ViewStyle>}) {
   return (
     <Svg
-      style={style}
       fill="none"
       viewBox="0 0 24 24"
       strokeWidth={1.5}
-      stroke="currentColor">
+      stroke="currentColor"
+      style={style}>
       <Path
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M14.25 9v6m-4.5 0V9M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+        d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
       />
     </Svg>
   );

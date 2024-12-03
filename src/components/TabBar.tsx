@@ -1,7 +1,7 @@
 import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {hp, wp} from '../utils/responsiveness';
-import {MText} from './customText';
+import {hp, wp} from '../utils';
+import {MText} from './CustomText';
 import {BottomPlayer} from './BottomPlayer';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
@@ -19,13 +19,12 @@ export const TabBar = (props: BottomTabBarProps) => {
     props.navigation.navigate(routeName);
   };
   return (
-    <>
+    <View style={styles.bgBlack}>
       <BottomPlayer />
       <View
         style={{
           ...styles.container,
-          height: hp(80 + insets.bottom),
-          paddingBottom: hp(insets.bottom),
+          marginBottom: insets.bottom,
         }}>
         {props.state.routes.map((route, index) => {
           const isActive = props.state.index === index;
@@ -41,11 +40,14 @@ export const TabBar = (props: BottomTabBarProps) => {
           );
         })}
       </View>
-    </>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  bgBlack: {
+    backgroundColor: '#000',
+  },
   iconText: {
     fontSize: hp(12),
     fontWeight: '600',
@@ -58,9 +60,7 @@ const styles = StyleSheet.create({
     height: wp(24),
   },
   button: {
-    // flex: 1,
     alignItems: 'center',
-    // justifyContent: 'center',
     flexDirection: 'row',
     paddingHorizontal: wp(14),
     paddingVertical: hp(7),
