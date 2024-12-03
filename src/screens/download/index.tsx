@@ -1,14 +1,18 @@
 import React, {useEffect} from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {FlatList, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MText} from '../../components/customText';
-import {useDownloadManagerStore} from '../../store/downloadStore';
+import {DownloadListItem} from '../../components/DownloadListItem';
+import {
+  DownloadedFile,
+  useDownloadManagerStore,
+} from '../../store/downloadStore';
 import {usePlayerStore} from '../../store/playerStore';
 import {hp, wp} from '../../utils/responsiveness';
 
 export default function DownloadScreen() {
   const {downloadedFiles, fetchDownloadedFiles} = useDownloadManagerStore();
-  const {start} = usePlayerStore();
+  const {start, currentTrack} = usePlayerStore();
 
   // Initialize the player and fetch files
   useEffect(() => {
@@ -18,31 +22,33 @@ export default function DownloadScreen() {
     init();
   }, [fetchDownloadedFiles]);
 
+  const handlePlayAudio = (item: DownloadedFile) => {
+    start({
+      artist: item.artist,
+      id: item.id,
+      title: item.title,
+      url: `file://${item.path}`,
+      artwork: item.artwork,
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.bottomContainer}>
         <MText style={styles.title}>Downloads</MText>
 
-        <View style={styles.songList}>
-          {downloadedFiles.map(item => (
-            <TouchableOpacity
-              key={item.id}
-              onPress={() =>
-                start({
-                  artist: item.artist,
-                  id: item.id,
-                  title: item.title,
-                  url: `file://${item.path}`,
-                  artwork: item.artwork,
-                })
-              }>
-              <View>
-                <MText>{item.title || item.id}</MText>
-                <MText>{item.artist}</MText>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <FlatList
+          contentContainerStyle={styles.songList}
+          data={downloadedFiles}
+          keyExtractor={item => item.id.toString()}
+          renderItem={({item}) => (
+            <DownloadListItem
+              item={item}
+              onClickPlay={() => handlePlayAudio(item)}
+              isCurrent={currentTrack?.id === item.id}
+            />
+          )}
+        />
       </View>
     </SafeAreaView>
   );

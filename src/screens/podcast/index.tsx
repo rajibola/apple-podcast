@@ -18,6 +18,7 @@ import {useDownloadManagerStore} from '../../store/downloadStore';
 import usePodcastsStore from '../../store/podcastsStore';
 import {hp, wp} from '../../utils/responsiveness';
 import {usePlayerStore} from '../../store/playerStore';
+import useFavouritesStore from '../../store/favouritesStore';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Podcast'>;
 
@@ -26,6 +27,7 @@ export default function PodcastScreen({route, navigation}: Props) {
   const {feed, loadFeed, setFeed} = usePodcastsStore();
   const {addToQueue, getDownloadElementById} = useDownloadManagerStore();
   const {start, setPlaylistId} = usePlayerStore();
+  const {addFavourite, removeFavourite, favourites} = useFavouritesStore();
 
   const loadAllFeeds = useCallback(async () => {
     await loadFeed(podcast.feedUrl);
@@ -52,6 +54,15 @@ export default function PodcastScreen({route, navigation}: Props) {
       artwork: item.itunes.image,
       duration: item.itunes.duration,
     });
+  };
+
+  const handleToggleFav = (idx: number) => {
+    const item = feed!.items[idx];
+    if (favourites.has(item.id)) {
+      removeFavourite(item.id);
+    } else {
+      addFavourite(item);
+    }
   };
 
   return (
@@ -99,8 +110,9 @@ export default function PodcastScreen({route, navigation}: Props) {
               downloadElement={getDownloadElementById(item.id)}
               onClickDownload={onDownloadPress}
               item={item}
-              // artistName={podcast.artistName}
               onClickPlay={() => handlePlayAudio(index)}
+              onToggleFav={() => handleToggleFav(index)}
+              isFavourite={Boolean(favourites.has(item.id))}
             />
           )}
         />

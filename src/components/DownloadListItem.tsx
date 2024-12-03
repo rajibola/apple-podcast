@@ -1,39 +1,35 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import {FeedItem} from 'react-native-rss-parser';
-import DownloadSvgIcon from '../assets/svgs/DownloadSvgIcon';
 import FavIcon from '../assets/svgs/FavIcon';
-import PauseSvgIcon from '../assets/svgs/PauseSvgIcon';
-import {DownloadElement} from '../store/downloadStore';
+import FilledFavIcon from '../assets/svgs/FilledFavIcon';
+import {DownloadedFile} from '../store/downloadStore';
 import {hp, wp} from '../utils/responsiveness';
 import {MText} from './customText';
-import FilledFavIcon from '../assets/svgs/FilledFavIcon';
 
-interface IFeedListItem {
-  item: FeedItem;
-  onClickDownload?: (feedItem: FeedItem) => void;
-  downloadElement?: DownloadElement;
+interface IDownloadListItem {
+  item: DownloadedFile;
   onClickPlay: () => void;
   onToggleFav?: () => void;
   isFavourite?: Boolean;
-  isPlaying?: Boolean;
+  isCurrent?: Boolean;
 }
 
-export const FeedListItem = ({
+export const DownloadListItem = ({
   item,
-  onClickDownload,
-  downloadElement,
   onClickPlay,
   onToggleFav,
   isFavourite,
-}: IFeedListItem) => {
+  isCurrent,
+}: IDownloadListItem) => {
   return (
-    <TouchableOpacity onPress={onClickPlay} style={styles.feedList}>
+    <TouchableOpacity
+      onPress={onClickPlay}
+      style={[styles.feedList, isCurrent && styles.current]}>
       <View>
         <MText numberOfLines={2} style={styles.feedTitle}>
           {item.title}
         </MText>
-        <MText style={styles.feedDuration}>{item.itunes.duration}</MText>
+        <MText style={styles.feedDuration}>{item.artist}</MText>
       </View>
       <View style={styles.buttons}>
         {isFavourite ? (
@@ -45,21 +41,15 @@ export const FeedListItem = ({
             <FavIcon style={styles.pause} />
           </TouchableOpacity>
         )}
-        {onClickDownload && (
-          <TouchableOpacity onPress={() => onClickDownload(item)}>
-            {downloadElement ? (
-              <PauseSvgIcon style={styles.pause} />
-            ) : (
-              <DownloadSvgIcon style={styles.pause} />
-            )}
-          </TouchableOpacity>
-        )}
       </View>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
+  current: {
+    backgroundColor: '#ffffff67',
+  },
   buttons: {
     flexDirection: 'row',
     gap: wp(10),
