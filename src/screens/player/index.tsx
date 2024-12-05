@@ -23,17 +23,10 @@ import {formatTime, hp, metrics, wp} from '../../utils';
 type Props = NativeStackScreenProps<MainStackParamList, 'Player'>;
 
 export function PlayerScreen({navigation}: Props) {
-  const {
-    isPlaying,
-    currentTrack,
-    seekForward10,
-    seekBackward10,
-    skipToNextTrack,
-    skipToPreviousTrack,
-  } = usePlayerStore();
+  const {isPlaying, seekForward10, seekBackward10, currentTrack} =
+    usePlayerStore();
 
-  const progress = useProgress();
-  const {position, duration} = progress;
+  const {position, duration} = useProgress();
 
   const onShare = async () => {
     if (!currentTrack || !currentTrack.title || !currentTrack.artist) {
@@ -44,11 +37,21 @@ export function PlayerScreen({navigation}: Props) {
     try {
       Share.share({
         message: `Check out this podcast: "${currentTrack.title}" by ${currentTrack.artist}`,
-        url: currentTrack.url,
+        url: currentTrack.url as string,
       });
     } catch (error: any) {
       Alert.alert('Error sharing', error.message);
     }
+  };
+
+  const handleNext = () => {
+    TrackPlayer.skipToNext();
+    TrackPlayer.play();
+  };
+
+  const handlePrevious = () => {
+    TrackPlayer.skipToPrevious();
+    TrackPlayer.play();
   };
 
   return (
@@ -76,7 +79,7 @@ export function PlayerScreen({navigation}: Props) {
         <FastImage
           style={styles.podcastCover}
           source={{
-            uri: currentTrack?.artwork,
+            uri: currentTrack?.artwork as string,
             priority: FastImage.priority.high,
           }}
         />
@@ -103,19 +106,17 @@ export function PlayerScreen({navigation}: Props) {
             <Previous10seconds />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={skipToPreviousTrack}
+            onPress={handlePrevious}
             hitSlop={metrics.makeHitSlop(15)}>
             <PrevIcon />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.playButton}
-            onPress={() =>
-              isPlaying ? TrackPlayer.pause() : TrackPlayer.play()
-            }>
+            onPress={isPlaying ? TrackPlayer.pause : TrackPlayer.play}>
             {isPlaying ? <SolidPause style={styles.playPause} /> : <PlayIcon />}
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={skipToNextTrack}
+            onPress={handleNext}
             hitSlop={metrics.makeHitSlop(15)}>
             <NextIcon />
           </TouchableOpacity>

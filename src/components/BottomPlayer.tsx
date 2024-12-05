@@ -19,6 +19,7 @@ type SongListItemNavigationProp = CompositeNavigationProp<
 export const BottomPlayer = () => {
   const {isPlaying, currentTrack} = usePlayerStore();
   const {navigate} = useNavigation<SongListItemNavigationProp>();
+
   if (!currentTrack) {
     return null;
   }
@@ -38,7 +39,7 @@ export const BottomPlayer = () => {
       <View style={styles.leftSection}>
         <FastImage
           source={{
-            uri: currentTrack?.artwork,
+            uri: currentTrack?.artwork as string,
             priority: FastImage.priority.high,
           }}
           style={styles.image}

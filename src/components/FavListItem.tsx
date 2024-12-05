@@ -1,9 +1,15 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {FeedItem} from 'react-native-rss-parser';
-import {FavIcon, FilledFavIcon, PlaySvgIcon} from '../assets/svgs';
+import {
+  FavIcon,
+  FilledFavIcon,
+  PauseSvgIcon,
+  PlaySvgIcon,
+} from '../assets/svgs';
 import {hp, wp} from '../utils';
 import {MText} from './CustomText';
+import FastImage from 'react-native-fast-image';
 
 interface IFavListItem {
   item: FeedItem;
@@ -21,14 +27,19 @@ export const FavListItem = ({
   isCurrent,
 }: IFavListItem) => {
   return (
-    <TouchableOpacity
-      onPress={onClickPlay}
-      style={[styles.feedList, isCurrent && styles.current]}>
-      <View>
-        <MText numberOfLines={2} style={styles.feedTitle}>
-          {item.title}
-        </MText>
-        <MText style={styles.feedDuration}>{item.itunes.duration}</MText>
+    <TouchableOpacity onPress={onClickPlay} style={styles.feedList}>
+      <View style={styles.imageText}>
+        <FastImage
+          style={styles.listImage}
+          source={{uri: item.itunes.image, priority: FastImage.priority.high}}
+          resizeMode={FastImage.resizeMode.cover}
+        />
+        <View>
+          <MText numberOfLines={2} style={styles.feedTitle}>
+            {item.title}
+          </MText>
+          <MText style={styles.feedDuration}>{item.itunes.duration}</MText>
+        </View>
       </View>
       <View style={styles.buttons}>
         {isFavourite ? (
@@ -42,7 +53,11 @@ export const FavListItem = ({
         )}
 
         <TouchableOpacity onPress={onClickPlay}>
-          <PlaySvgIcon style={styles.pause} />
+          {isCurrent ? (
+            <PauseSvgIcon style={styles.pause} />
+          ) : (
+            <PlaySvgIcon style={styles.pause} />
+          )}
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -50,6 +65,18 @@ export const FavListItem = ({
 };
 
 const styles = StyleSheet.create({
+  listImage: {
+    width: wp(60.2),
+    height: wp(56),
+    backgroundColor: '#fff',
+    borderRadius: wp(5),
+    objectFit: 'cover',
+  },
+  imageText: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: wp(10),
+  },
   current: {
     backgroundColor: '#242424',
   },
@@ -57,7 +84,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: wp(10),
   },
-  pause: {color: '#fff', width: wp(22), height: wp(22)},
+  pause: {color: '#fff', width: wp(26), height: wp(24)},
   feedDuration: {
     color: '#fff',
     opacity: 0.7,
@@ -68,14 +95,12 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginBottom: hp(4),
     fontSize: hp(13),
-    width: wp(270),
+    width: wp(200),
   },
   feedList: {
-    padding: hp(5),
-    paddingVertical: hp(8),
-    borderBottomWidth: hp(0.5),
     borderColor: 'rgba(255, 255, 255, 0.3)',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });

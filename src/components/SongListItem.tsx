@@ -96,11 +96,9 @@ export const SongListItemSkeleton = () => {
 
   return (
     <View style={styles.songList}>
-      {/* Animated Placeholder for Image */}
       <Animated.View
         style={[styles.imageSkeleton, {backgroundColor: shimmerBackground}]}
       />
-      {/* Animated Placeholder for Text */}
       <View style={styles.textContainer}>
         <Animated.View
           style={[styles.titleSkeleton, {backgroundColor: shimmerBackground}]}
@@ -112,7 +110,6 @@ export const SongListItemSkeleton = () => {
           ]}
         />
       </View>
-      {/* Animated Placeholder for Play Icon */}
       <Animated.View
         style={[styles.iconSkeleton, {backgroundColor: shimmerBackground}]}
       />
