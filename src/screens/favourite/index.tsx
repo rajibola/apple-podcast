@@ -1,25 +1,33 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import {FeedItem} from 'react-native-rss-parser';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {MText, FavListItem} from '../../components';
+import TrackPlayer from 'react-native-track-player';
+import {FavListItem, MText} from '../../components';
 import {useFavouritesStore, usePlayerStore} from '../../store';
 import {hp, wp} from '../../utils';
 
 export const FavouriteScreen = () => {
   const {favourites, removeFavourite} = useFavouritesStore();
-  const {start, currentTrack} = usePlayerStore();
+  const {currentTrack} = usePlayerStore();
+  const [hasTracksAdded, setHasTracksAdded] = useState(false);
 
-  const handlePlayAudio = async (item: FeedItem) => {
-    console.log(currentTrack?.id, item.id);
-    start({
-      id: item.id,
-      url: item.enclosures[0].url,
-      title: item.title,
-      artist: item.authors[0]?.name,
-      artwork: item.itunes.image,
-      duration: item.itunes.duration,
-    });
+  const handlePlayAudio = async (idx: number) => {
+    await TrackPlayer.reset();
+    if (!hasTracksAdded) {
+      await TrackPlayer.add(
+        Array.from(favourites.values())?.map(item => ({
+          id: item.id,
+          url: item.enclosures[0].url,
+          artwork: item.itunes.image,
+          title: item.title,
+          artist: item.authors[0]?.name,
+        })),
+      );
+      setHasTracksAdded(true);
+    }
+
+    await TrackPlayer.skip(idx);
+    await TrackPlayer.play();
   };
 
   return (
@@ -31,10 +39,10 @@ export const FavouriteScreen = () => {
           contentContainerStyle={styles.songList}
           data={Array.from(favourites.values())}
           keyExtractor={item => item.id.toString()}
-          renderItem={({item}) => (
+          renderItem={({item, index}) => (
             <FavListItem
               item={item}
-              onClickPlay={() => handlePlayAudio(item)}
+              onClickPlay={() => handlePlayAudio(index)}
               onToggleFav={() => removeFavourite(item.id)}
               isFavourite={Boolean(favourites.has(item.id))}
               isCurrent={currentTrack?.id === item.id}

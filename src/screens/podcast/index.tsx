@@ -1,5 +1,5 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -10,13 +10,13 @@ import {
 import FastImage from 'react-native-fast-image';
 import {FeedItem} from 'react-native-rss-parser';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import TrackPlayer from 'react-native-track-player';
 import {BackIcon} from '../../assets/svgs';
 import {FeedListItem, MText} from '../../components';
 import {RootStackParamList} from '../../navigations/BottomTabNavigator';
 import {
   useDownloadManagerStore,
   useFavouritesStore,
-  usePlayerStore,
   usePodcastsStore,
 } from '../../store';
 import {hp, wp} from '../../utils';
@@ -25,10 +25,10 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Podcast'>;
 
 export function PodcastScreen({route, navigation}: Props) {
   const {podcast} = route.params;
-  const {feed, loadFeed, setFeed} = usePodcastsStore();
+  const {feed, loadFeed, setFeed, cachedFeeds} = usePodcastsStore();
   const {addToQueue, getDownloadElementById} = useDownloadManagerStore();
-  const {start, setPlaylistId} = usePlayerStore();
   const {addFavourite, removeFavourite, favourites} = useFavouritesStore();
+  const [hasTracksAdded, setHasTracksAdded] = useState(false);
 
   const loadAllFeeds = useCallback(async () => {
     await loadFeed(podcast.feedUrl);
@@ -44,17 +44,22 @@ export function PodcastScreen({route, navigation}: Props) {
     return () => setFeed(null);
   }, [loadAllFeeds, setFeed]);
 
-  const handlePlayAudio = (idx: number) => {
-    const item = feed!.items[idx];
-    setPlaylistId(podcast.feedUrl);
-    start({
-      id: String(idx),
-      url: item.enclosures[0].url,
-      title: item.title,
-      artist: item.authors[0]?.name ?? podcast?.artistName,
-      artwork: item.itunes.image,
-      duration: item.itunes.duration,
-    });
+  const handlePlayAudio = async (idx: number) => {
+    const currentFeed = await cachedFeeds[podcast.feedUrl];
+    await TrackPlayer.reset();
+    if (!hasTracksAdded && currentFeed) {
+      await TrackPlayer.add(
+        currentFeed?.items.map(item => ({
+          url: item.enclosures[0].url,
+          artwork: item.itunes.image,
+          title: item.title,
+          artist: item.authors[0]?.name,
+        })),
+      );
+      setHasTracksAdded(true);
+    }
+    TrackPlayer.skip(idx);
+    TrackPlayer.play();
   };
 
   const handleToggleFav = (idx: number) => {
