@@ -12,10 +12,12 @@ export const PlaybackService = async function () {
   );
   TrackPlayer.addEventListener(
     Event.PlaybackState,
-    ({state}: {state: State}) => {
+    async ({state}: {state: State}) => {
       const updateState = usePlayerStore.getState();
       if (state === State.Playing) {
-        updateState.playPodcast(updateState.currentPodcast || '');
+        const trackId = await TrackPlayer.getCurrentTrack();
+        const currentTrack = await TrackPlayer.getTrack(trackId!);
+        updateState.playPodcast(currentTrack!);
       } else if (state === State.Paused) {
         updateState.pausePodcast();
       } else {

@@ -1,20 +1,17 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {MText, DownloadListItem} from '../../components';
-import {
-  DownloadedFile,
-  useDownloadManagerStore,
-  usePlayerStore,
-} from '../../store';
+import TrackPlayer from 'react-native-track-player';
+import {DownloadListItem, MText} from '../../components';
+import {useDownloadManagerStore, usePlayerStore} from '../../store';
 import {hp, wp} from '../../utils';
 
 export function DownloadScreen() {
   const {downloadedFiles, fetchDownloadedFiles, deleteDownloadedFile} =
     useDownloadManagerStore();
-  const {start, currentTrack} = usePlayerStore();
+  const {currentTrack} = usePlayerStore();
+  const [hasTracksAdded, setHasTracksAdded] = useState(false);
 
-  // Initialize the player and fetch files
   useEffect(() => {
     const init = async () => {
       fetchDownloadedFiles();
@@ -22,14 +19,22 @@ export function DownloadScreen() {
     init();
   }, [fetchDownloadedFiles]);
 
-  const handlePlayAudio = (item: DownloadedFile) => {
-    start({
-      artist: item.artist,
-      id: item.id,
-      title: item.title,
-      url: `file://${item.path}`,
-      artwork: item.artwork,
-    });
+  const handlePlayAudio = async (idx: number) => {
+    await TrackPlayer.reset();
+    if (!hasTracksAdded) {
+      await TrackPlayer.add(
+        downloadedFiles.map(item => ({
+          artist: item.artist,
+          id: item.id,
+          title: item.title,
+          url: `file://${item.path}`,
+          artwork: item.artwork,
+        })),
+      );
+      setHasTracksAdded(true);
+    }
+    await TrackPlayer.skip(idx);
+    await TrackPlayer.play();
   };
 
   const handleDelete = (id: string) => {
@@ -45,10 +50,10 @@ export function DownloadScreen() {
           contentContainerStyle={styles.songList}
           data={downloadedFiles}
           keyExtractor={item => item.id.toString()}
-          renderItem={({item}) => (
+          renderItem={({item, index}) => (
             <DownloadListItem
               item={item}
-              onClickPlay={() => handlePlayAudio(item)}
+              onClickPlay={() => handlePlayAudio(index)}
               isCurrent={currentTrack?.id === item.id}
               onDelete={() => handleDelete(item.id)}
             />
